@@ -10,7 +10,7 @@ public class ArbolAVL {
         raiz = null;
     }
 
-    // ========== INSERCIÓN PÚBLICA ==========
+    //INSERCIÓN PÚBLICA 
     public void insertar(Producto p) {
         raiz = insertarRec(raiz, p);
     }

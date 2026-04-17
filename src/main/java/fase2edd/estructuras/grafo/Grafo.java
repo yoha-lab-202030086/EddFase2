@@ -1,13 +1,147 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package fase2edd.estructuras.grafo;
 
-/**
- *
- * @author fer
- */
+
 public class Grafo {
-    
+    private NodoGrafo[] nodos;
+    private int numNodos;
+    private int capacidadNodos;
+
+    public Grafo() {
+        capacidadNodos = 8;
+        nodos = new NodoGrafo[capacidadNodos];
+        numNodos = 0;
+    }
+
+    // Agregar un nodo (sucursal)
+    public void agregarNodo(int idSucursal) {
+        if (buscarNodo(idSucursal) != null) return; // ya existe
+        if (numNodos == capacidadNodos) {
+            capacidadNodos *= 2;
+            NodoGrafo[] nuevo = new NodoGrafo[capacidadNodos];
+            for (int i = 0; i < numNodos; i++) {
+                nuevo[i] = nodos[i];
+            }
+            nodos = nuevo;
+        }
+        nodos[numNodos++] = new NodoGrafo(idSucursal);
+    }
+
+    // Agregar arista (con pesos)
+    public void agregarArista(int origen, int destino, double tiempo, double costo) {
+        NodoGrafo nodoOrigen = buscarNodo(origen);
+        if (nodoOrigen == null) {
+            agregarNodo(origen);
+            nodoOrigen = buscarNodo(origen);
+        }
+        // Evitar duplicados: si ya existe arista entre los mismos, se actualiza
+        Arista[] existentes = nodoOrigen.getAristas();
+        for (int i = 0; i < nodoOrigen.getNumAristas(); i++) {
+            if (existentes[i].getDestino() == destino) {
+                // Actualizar pesos
+                existentes[i] = new Arista(destino, tiempo, costo);
+                return;
+            }
+        }
+        nodoOrigen.agregarArista(new Arista(destino, tiempo, costo));
+    }
+
+    private NodoGrafo buscarNodo(int id) {
+        for (int i = 0; i < numNodos; i++) {
+            if (nodos[i].getIdSucursal() == id) return nodos[i];
+        }
+        return null;
+    }
+
+    // ========== RUTA MÁS CORTA (Dijkstra) ==========
+    // criterio: 0 para tiempo, 1 para costo
+    // Devuelve un arreglo con los ids de la ruta, o null si no hay ruta
+    public int[] rutaMasCorta(int idOrigen, int idDestino, int criterio) {
+        // Número de nodos en el grafo
+        int n = numNodos;
+        if (n == 0) return null;
+
+        // Mapear ids a índices
+        int origenIdx = -1, destinoIdx = -1;
+        for (int i = 0; i < n; i++) {
+            if (nodos[i].getIdSucursal() == idOrigen) origenIdx = i;
+            if (nodos[i].getIdSucursal() == idDestino) destinoIdx = i;
+        }
+        if (origenIdx == -1 || destinoIdx == -1) return null;
+
+        // Arreglos para Dijkstra
+        double[] dist = new double[n];
+        boolean[] visitado = new boolean[n];
+        int[] anterior = new int[n];
+
+        for (int i = 0; i < n; i++) {
+            dist[i] = Double.MAX_VALUE;
+            anterior[i] = -1;
+        }
+        dist[origenIdx] = 0;
+
+        // Procesar todos los nodos
+        for (int count = 0; count < n; count++) {
+            int u = -1;
+            double minDist = Double.MAX_VALUE;
+            // Seleccionar nodo no visitado con menor distancia
+            for (int i = 0; i < n; i++) {
+                if (!visitado[i] && dist[i] < minDist) {
+                    minDist = dist[i];
+                    u = i;
+                }
+            }
+            if (u == -1) break; // nodos inalcanzables
+            visitado[u] = true;
+
+            // Relajar aristas de u
+            Arista[] aristasU = nodos[u].getAristas();
+            for (int j = 0; j < nodos[u].getNumAristas(); j++) {
+                int vIdx = -1;
+                for (int k = 0; k < n; k++) {
+                    if (nodos[k].getIdSucursal() == aristasU[j].getDestino()) {
+                        vIdx = k;
+                        break;
+                    }
+                }
+                if (vIdx == -1) continue;
+                double peso = (criterio == 0) ? aristasU[j].getTiempo() : aristasU[j].getCosto();
+                if (!visitado[vIdx] && dist[u] + peso < dist[vIdx]) {
+                    dist[vIdx] = dist[u] + peso;
+                    anterior[vIdx] = u;
+                }
+            }
+        }
+
+        // Reconstruir ruta
+        if (dist[destinoIdx] == Double.MAX_VALUE) return null;
+
+        // Contar nodos de la ruta
+        int[] temp = new int[n];
+        int count = 0;
+        int actual = destinoIdx;
+        while (actual != -1) {
+            temp[count++] = nodos[actual].getIdSucursal();
+            actual = anterior[actual];
+        }
+
+        // Invertir para que vaya de origen a destino
+        int[] ruta = new int[count];
+        for (int i = 0; i < count; i++) {
+            ruta[i] = temp[count - 1 - i];
+        }
+        return ruta;
+    }
+
+    // Para visualización: devuelve todos los nodos
+    public NodoGrafo[] getNodos() {
+        NodoGrafo[] resultado = new NodoGrafo[numNodos];
+        for (int i = 0; i < numNodos; i++) {
+            resultado[i] = nodos[i];
+        }
+        return resultado;
+    }
+
+    public int getNumNodos() {
+        return numNodos;
+    }
 }
