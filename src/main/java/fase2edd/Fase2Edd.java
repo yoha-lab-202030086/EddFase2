@@ -1,6 +1,8 @@
 
 package fase2edd;
 
+import fase2edd.vista.VentanaPrincipal;
+
 /**
  *
  * @author fer
@@ -8,6 +10,8 @@ package fase2edd;
 public class Fase2Edd {
 
     public static void main(String[] args) {
-        System.out.println("Hello World!");
+        VentanaPrincipal v=new VentanaPrincipal();
+        v.setVisible(true);
+        v.setLocationRelativeTo(null);
     }
 }
