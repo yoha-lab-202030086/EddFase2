@@ -6,9 +6,8 @@ import fase2edd.model.Producto;
 import fase2edd.model.ResultadoOperacion;
 import fase2edd.util.Validaciones;
 
-
-
 public class ServicioCSV {
+
     private ServicioLog logger;
     private ControladorGlobal controlador;
 
@@ -18,8 +17,8 @@ public class ServicioCSV {
     }
 
     /**
-     * Carga el catálogo de productos desde un archivo CSV.
-     * Formato: SucursalID, Nombre, CodigoBarra, Categoria, FechaCaducidad, Marca, Precio, Stock
+     * Carga el catálogo de productos desde un archivo CSV. Formato: SucursalID,
+     * Nombre, CodigoBarra, Categoria, FechaCaducidad, Marca, Precio, Stock
      */
     public int cargarProductos(String rutaArchivo) {
         logger.logEvento("Cargando productos desde: " + rutaArchivo);
@@ -31,7 +30,15 @@ public class ServicioCSV {
             int numLinea = 0;
             while ((linea = br.readLine()) != null) {
                 numLinea++;
-                if (linea.trim().isEmpty()) continue; // ignorar líneas vacías
+
+                // Omitir la cabecera
+                if (numLinea == 1) {
+                    continue;
+                }
+
+                if (linea.trim().isEmpty()) {
+                    continue; // ignorar líneas vacías
+                }
                 String[] partes = linea.split(",");
                 if (partes.length < 8) {
                     logger.logProductoMalFormado("Línea " + numLinea + ": " + linea);
@@ -89,7 +96,10 @@ public class ServicioCSV {
             logger.logError("Error al leer archivo de productos: " + e.getMessage());
         } finally {
             if (br != null) {
-                try { br.close(); } catch (Exception ex) {}
+                try {
+                    br.close();
+                } catch (Exception ex) {
+                }
             }
         }
         logger.logEvento("Productos cargados: " + cargados);
@@ -97,8 +107,8 @@ public class ServicioCSV {
     }
 
     /**
-     * Carga sucursales desde CSV.
-     * Formato: ID, Nombre, Ubicación, t_ingreso, t_traspaso, t_despacho
+     * Carga sucursales desde CSV. Formato: ID, Nombre, Ubicación, t_ingreso,
+     * t_traspaso, t_despacho
      */
     public int cargarSucursales(String rutaArchivo) {
         logger.logEvento("Cargando sucursales desde: " + rutaArchivo);
@@ -110,7 +120,15 @@ public class ServicioCSV {
             int numLinea = 0;
             while ((linea = br.readLine()) != null) {
                 numLinea++;
-                if (linea.trim().isEmpty()) continue;
+
+                // Salta la primera línea (la cabecera)
+                if (numLinea == 1) {
+                    continue;
+                }
+
+                if (linea.trim().isEmpty()) {
+                    continue;
+                }
                 String[] partes = linea.split(",");
                 if (partes.length < 6) {
                     logger.logProductoMalFormado("Línea " + numLinea + " sucursal: " + linea);
@@ -129,21 +147,29 @@ public class ServicioCSV {
                     continue;
                 }
                 boolean ok = controlador.crearSucursal(id, nombre, ubicacion, tIngreso, tTraspaso, tDespacho);
-                if (ok) cargadas++;
-                else logger.logError("No se pudo crear sucursal en línea " + numLinea + ", posible ID duplicado");
+                if (ok) {
+                    cargadas++;
+                } else {
+                    logger.logError("No se pudo crear sucursal en línea " + numLinea + ", posible ID duplicado");
+                }
             }
         } catch (Exception e) {
             logger.logError("Error al leer archivo de sucursales: " + e.getMessage());
         } finally {
-            if (br != null) { try { br.close(); } catch (Exception ex) {} }
+            if (br != null) {
+                try {
+                    br.close();
+                } catch (Exception ex) {
+                }
+            }
         }
         logger.logEvento("Sucursales cargadas: " + cargadas);
         return cargadas;
     }
 
     /**
-     * Carga conexiones entre sucursales desde CSV.
-     * Formato: OrigenID, DestinoID, Tiempo, Costo
+     * Carga conexiones entre sucursales desde CSV. Formato: OrigenID,
+     * DestinoID, Tiempo, Costo
      */
     public int cargarConexiones(String rutaArchivo) {
         logger.logEvento("Cargando conexiones desde: " + rutaArchivo);
@@ -155,7 +181,15 @@ public class ServicioCSV {
             int numLinea = 0;
             while ((linea = br.readLine()) != null) {
                 numLinea++;
-                if (linea.trim().isEmpty()) continue;
+
+                // Omitir la cabecera
+                if (numLinea == 1) {
+                    continue;
+                }
+
+                if (linea.trim().isEmpty()) {
+                    continue;
+                }
                 String[] partes = linea.split(",");
                 if (partes.length < 4) {
                     logger.logProductoMalFormado("Línea " + numLinea + " conexión: " + linea);
@@ -170,13 +204,21 @@ public class ServicioCSV {
                 // Aquí lo pondremos bidireccional por simplicidad.
                 Conexion conexion = new Conexion(origen, destino, tiempo, costo, true);
                 boolean ok = controlador.agregarConexion(conexion);
-                if (ok) cargadas++;
-                else logger.logError("Error al agregar conexión en línea " + numLinea);
+                if (ok) {
+                    cargadas++;
+                } else {
+                    logger.logError("Error al agregar conexión en línea " + numLinea);
+                }
             }
         } catch (Exception e) {
             logger.logError("Error al leer archivo de conexiones: " + e.getMessage());
         } finally {
-            if (br != null) { try { br.close(); } catch (Exception ex) {} }
+            if (br != null) {
+                try {
+                    br.close();
+                } catch (Exception ex) {
+                }
+            }
         }
         logger.logEvento("Conexiones cargadas: " + cargadas);
         return cargadas;

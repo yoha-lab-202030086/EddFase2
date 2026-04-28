@@ -1,9 +1,11 @@
 fase2edd/servicios/ServicioCSV.class
 fase2edd/simulacion/SimuladorDespacho.class
+fase2edd/vista/VisualizadorGraphviz.class
 fase2edd/estructuras/listas/pila/Pila.class
 fase2edd/vista/VentanaPrincipal.class
 fase2edd/model/Producto.class
 fase2edd/estructuras/btree/NodoB.class
+fase2edd/vista/VentanaPrincipal$1.class
 fase2edd/inventario/Inventario.class
 fase2edd/estructuras/grafo/NodoGrafo.class
 fase2edd/estructuras/arbolavl/ArbolAVL.class

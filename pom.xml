@@ -10,4 +10,12 @@
         <maven.compiler.release>21</maven.compiler.release>
         <exec.mainClass>fase2edd.Fase2Edd</exec.mainClass>
     </properties>
+    
+    <dependencies>
+       <dependency>
+            <groupId>guru.nidi</groupId>
+            <artifactId>graphviz-java</artifactId>
+            <version>0.18.1</version>
+        </dependency>
+    </dependencies>
 </project>

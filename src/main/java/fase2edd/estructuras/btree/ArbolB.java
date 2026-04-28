@@ -14,6 +14,10 @@ public class ArbolB {
         this.d = d;
         this.raiz = null;
     }
+    
+    public NodoB getRaiz() {
+    return raiz;
+}
 
     //  INSERCIÓN 
     public void insertar(Producto p) {

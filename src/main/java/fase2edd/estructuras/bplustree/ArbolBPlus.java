@@ -13,6 +13,10 @@ public class ArbolBPlus {
         this.d = d;
         this.raiz = null;
     }
+    
+    public NodoBPlus getRaiz() {
+    return raiz;
+}
 
     // ===================== INSERCIÓN =====================
     public void insertar(Producto p) {

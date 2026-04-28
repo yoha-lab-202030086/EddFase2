@@ -56,6 +56,10 @@ public class ArbolAVL {
     public Producto buscarPorNombre(String nombre) {
         return buscarRec(raiz, nombre);
     }
+    
+    public NodoAVL getRaiz() {
+    return raiz;
+}
 
     private Producto buscarRec(NodoAVL nodo, String nombre) {
         if (nodo == null) return null;

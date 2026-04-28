@@ -1,23 +1,83 @@
-
 package fase2edd.vista;
 
+import fase2edd.control.ControladorGlobal;
+import fase2edd.estructuras.listas.ListaEnlazada;
+import fase2edd.inventario.Inventario;
+import fase2edd.servicios.ServicioCSV;
+import fase2edd.servicios.ServicioLog;
+import fase2edd.model.Producto;
+import fase2edd.model.ResultadoOperacion;
+import fase2edd.model.Sucursal;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import javax.swing.JDialog;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSlider;
 
 public class VentanaPrincipal extends javax.swing.JFrame {
-    
+
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(VentanaPrincipal.class.getName());
 
-    /**
-     * Creates new form VentanaPrincipal
-     */
+    private ControladorGlobal controlador;
+    private ServicioLog logg;
+    private ServicioCSV servicioCSV;
+
     public VentanaPrincipal() {
         initComponents();
-        
+        csvConexiones.setEnabled(false);
+        csvProducto.setEnabled(false);
         rangos.setVisible(false);
-        
-        
+        controlador = new ControladorGlobal();
+        logg = new ServicioLog("errores.log");
+        logg.abrir();
+        servicioCSV = new ServicioCSV(controlador, logg);
+        actualizarComboSucursales();
+        refrescarTabla();
+        output.setText("Sistema iniciado. Cargue datos desde Archivo → Cargar CSV.");
+
     }
 
-  
+    private void actualizarComboSucursales() {
+        jComboBox1.removeAllItems();
+        Sucursal[] sucursales = controlador.getCtrlSucursales().getSucursales();
+        for (Sucursal s : sucursales) {
+            jComboBox1.addItem(s.getId() + " - " + s.getNombre());
+        }
+    }
+
+    private void refrescarTabla() {
+        javax.swing.table.DefaultTableModel modelo
+                = (javax.swing.table.DefaultTableModel) tablaProductos.getModel();
+        modelo.setRowCount(0);
+
+        // Obtener sucursal activa del combo
+        String seleccion = (String) jComboBox1.getSelectedItem();
+        if (seleccion == null) {
+            sucursalSeleccionado.setText("Ninguna");
+            return;
+        }
+        int idSucursal = Integer.parseInt(seleccion.split(" - ")[0]);
+        controlador.setSucursalActiva(idSucursal);
+        sucursalSeleccionado.setText(seleccion);
+        sucursal.setText(seleccion);
+
+        Producto[] productos = controlador.listarPorNombre();
+        if (productos != null) {
+            for (Producto p : productos) {
+                modelo.addRow(new Object[]{
+                    p.getNombre(), p.getCodigoBarra(), p.getCategoria(),
+                    p.getFechaCaducidad(), p.getMarca(), p.getPrecio(), p.getStock()
+                });
+            }
+        }
+    }
+
+    // Muestra un mensaje en el label output (barra de estado)
+    private void mostrarMensaje(String texto) {
+        output.setText(texto);
+    }
+
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -50,7 +110,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         agregar = new javax.swing.JButton();
         busqueda = new javax.swing.JPanel();
         jLabel11 = new javax.swing.JLabel();
-        jLabel12 = new javax.swing.JLabel();
+        val = new javax.swing.JLabel();
         valor = new javax.swing.JTextField();
         buscar = new javax.swing.JButton();
         limpiar = new javax.swing.JButton();
@@ -67,6 +127,11 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         sucursal = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         tablaProductos = new javax.swing.JTable();
+        elimiarSelect = new javax.swing.JButton();
+        verAvl = new javax.swing.JButton();
+        verHash = new javax.swing.JButton();
+        verB = new javax.swing.JButton();
+        verBplus = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         jPanel3 = new javax.swing.JPanel();
         jPanel4 = new javax.swing.JPanel();
@@ -89,8 +154,9 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         jLabel1.setFont(new java.awt.Font("Liberation Sans", 1, 16)); // NOI18N
         jLabel1.setText("Sucursal");
 
-        jComboBox1.setFont(new java.awt.Font("Liberation Sans", 1, 16)); // NOI18N
+        jComboBox1.setFont(new java.awt.Font("Liberation Sans", 0, 14)); // NOI18N
         jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Seleccione", " " }));
+        jComboBox1.addActionListener(this::jComboBox1ActionPerformed);
 
         sucursalSeleccionado.setFont(new java.awt.Font("Liberation Sans", 1, 16)); // NOI18N
         sucursalSeleccionado.setText("aaaa");
@@ -123,8 +189,10 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         jLabel10.setText("Stock:");
 
         deshacer.setText("Deshacer");
+        deshacer.addActionListener(this::deshacerActionPerformed);
 
         agregar.setText("Agregar");
+        agregar.addActionListener(this::agregarActionPerformed);
 
         javax.swing.GroupLayout jPanel10Layout = new javax.swing.GroupLayout(jPanel10);
         jPanel10.setLayout(jPanel10Layout);
@@ -209,18 +277,26 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         jLabel11.setFont(new java.awt.Font("Liberation Sans", 1, 16)); // NOI18N
         jLabel11.setText("Busqueda y resultados");
 
-        jLabel12.setFont(new java.awt.Font("Liberation Sans", 1, 16)); // NOI18N
-        jLabel12.setText("Valor:");
+        val.setFont(new java.awt.Font("Liberation Sans", 1, 16)); // NOI18N
+        val.setText("Valor:");
 
         buscar.setText("Buscar");
+        buscar.addActionListener(this::buscarActionPerformed);
 
         limpiar.setText("Limpiar");
+        limpiar.addActionListener(this::limpiarActionPerformed);
 
         jLabel15.setFont(new java.awt.Font("Liberation Sans", 1, 16)); // NOI18N
         jLabel15.setText("Desde:");
 
+        desde.setFont(new java.awt.Font("Liberation Sans", 0, 14)); // NOI18N
+        desde.setText("YY-MM-DD");
+
         jLabel16.setFont(new java.awt.Font("Liberation Sans", 1, 16)); // NOI18N
         jLabel16.setText("Hasta:");
+
+        hasta.setFont(new java.awt.Font("Liberation Sans", 0, 14)); // NOI18N
+        hasta.setText("YY-MM-DD");
 
         javax.swing.GroupLayout rangosLayout = new javax.swing.GroupLayout(rangos);
         rangos.setLayout(rangosLayout);
@@ -278,7 +354,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGroup(busquedaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, busquedaLayout.createSequentialGroup()
-                                .addComponent(jLabel12)
+                                .addComponent(val)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addGroup(busquedaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                     .addGroup(busquedaLayout.createSequentialGroup()
@@ -319,7 +395,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
                     .addComponent(rRango))
                 .addGap(16, 16, 16)
                 .addGroup(busquedaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel12)
+                    .addComponent(val)
                     .addComponent(valor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(rangos, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -358,62 +434,108 @@ public class VentanaPrincipal extends javax.swing.JFrame {
 
         tablaProductos.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null}
             },
             new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
+                "Nombre", "CodigoBarra", "Categoria", "FechaCaducidad", "Marca", "Precio", "Stock"
             }
-        ));
+        ) {
+            boolean[] canEdit = new boolean [] {
+                true, true, false, true, true, true, true
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
         jScrollPane1.setViewportView(tablaProductos);
+
+        elimiarSelect.setText("Eliminar Seleccionado");
+        elimiarSelect.addActionListener(this::elimiarSelectActionPerformed);
+
+        verAvl.setText("Ver AVL");
+        verAvl.addActionListener(this::verAvlActionPerformed);
+
+        verHash.setText("Ver Hash");
+        verHash.addActionListener(this::verHashActionPerformed);
+
+        verB.setText("Ver B");
+        verB.addActionListener(this::verBActionPerformed);
+
+        verBplus.setText("Ver B+");
+        verBplus.addActionListener(this::verBplusActionPerformed);
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(157, 157, 157)
-                .addComponent(jLabel1)
-                .addGap(28, 28, 28)
-                .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jLabel3)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(sucursalSeleccionado)
-                .addGap(270, 270, 270))
+                .addGap(153, 153, 153)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jLabel1)
+                        .addGap(33, 33, 33)
+                        .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jLabel3)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(sucursalSeleccionado)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(6, 6, 6)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(jLabel13)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(sucursal, javax.swing.GroupLayout.PREFERRED_SIZE, 257, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jPanel9, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(0, 0, Short.MAX_VALUE))))
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(153, 153, 153)
-                        .addComponent(jLabel13)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(sucursal, javax.swing.GroupLayout.PREFERRED_SIZE, 257, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(116, 116, 116)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 902, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(167, 167, 167)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jPanel9, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 801, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addContainerGap(129, Short.MAX_VALUE))
+                        .addGap(81, 81, 81)
+                        .addComponent(elimiarSelect)
+                        .addGap(64, 64, 64)
+                        .addComponent(verAvl)
+                        .addGap(58, 58, 58)
+                        .addComponent(verHash)
+                        .addGap(67, 67, 67)
+                        .addComponent(verB)
+                        .addGap(83, 83, 83)
+                        .addComponent(verBplus)))
+                .addGap(0, 119, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(20, 20, 20)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel1)
-                    .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel3)
-                    .addComponent(sucursalSeleccionado))
+                .addContainerGap()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel1)
+                        .addComponent(jLabel3)
+                        .addComponent(sucursalSeleccionado))
+                    .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel9, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel13)
                     .addComponent(sucursal))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 253, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(elimiarSelect)
+                    .addComponent(verAvl)
+                    .addComponent(verHash)
+                    .addComponent(verB)
+                    .addComponent(verBplus))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -427,7 +549,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 685, Short.MAX_VALUE)
+            .addGap(0, 688, Short.MAX_VALUE)
         );
 
         jTabbedPane3.addTab("Sucursales", jPanel2);
@@ -440,7 +562,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 685, Short.MAX_VALUE)
+            .addGap(0, 688, Short.MAX_VALUE)
         );
 
         jTabbedPane3.addTab("Red de Sucursales", jPanel3);
@@ -453,7 +575,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 685, Short.MAX_VALUE)
+            .addGap(0, 688, Short.MAX_VALUE)
         );
 
         jTabbedPane3.addTab("Transferencias", jPanel4);
@@ -518,18 +640,38 @@ public class VentanaPrincipal extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addGap(15, 15, 15)
                 .addComponent(jTabbedPane3)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(output, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, 101, Short.MAX_VALUE))
-                .addGap(18, 18, 18))
+                    .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, 84, Short.MAX_VALUE))
+                .addContainerGap())
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void csvSucursalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_csvSucursalActionPerformed
-       
+        javax.swing.JFileChooser fc = new javax.swing.JFileChooser();
+        javax.swing.filechooser.FileNameExtensionFilter filtro
+                = new javax.swing.filechooser.FileNameExtensionFilter("Archivos CSV (*.csv)", "csv");
+
+        fc.setFileFilter(filtro);
+
+        fc.setAcceptAllFileFilterUsed(false);
+        fc.setDialogTitle("Seleccionar archivo de sucursales");
+        int resultado = fc.showOpenDialog(this);
+        if (resultado == javax.swing.JFileChooser.APPROVE_OPTION) {
+            String ruta = fc.getSelectedFile().getAbsolutePath();
+            int cargadas = servicioCSV.cargarSucursales(ruta);
+            mostrarMensaje("Sucursales cargadas: " + cargadas);
+            actualizarComboSucursales();
+            refrescarTabla();
+
+            if (cargadas > 0) {
+                csvSucursal.setEnabled(false);
+                csvConexiones.setEnabled(true);
+            }
+        }
     }//GEN-LAST:event_csvSucursalActionPerformed
 
     private void btreeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btreeActionPerformed
@@ -541,14 +683,16 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void rRangoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rRangoActionPerformed
-       if(rRango.isSelected()){
-           rangos.setVisible(true);
-       }else{
-           rangos.setVisible(false);
-       }
-       
-       busqueda.revalidate();
-       busqueda.repaint();
+        if (rRango.isSelected()) {
+            rangos.setVisible(true);
+            valor.setVisible(false);
+            val.setVisible(false);
+        } else {
+            rangos.setVisible(false);
+        }
+
+        busqueda.revalidate();
+        busqueda.repaint();
     }//GEN-LAST:event_rRangoActionPerformed
 
     private void rnombreActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rnombreActionPerformed
@@ -556,24 +700,271 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     }//GEN-LAST:event_rnombreActionPerformed
 
     private void rcategActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rcategActionPerformed
-                rangos.setVisible(false);
+        rangos.setVisible(false);
 
     }//GEN-LAST:event_rcategActionPerformed
 
     private void rcodigoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rcodigoActionPerformed
-            rangos.setVisible(false);
+        rangos.setVisible(false);
 
     }//GEN-LAST:event_rcodigoActionPerformed
 
     private void csvConexionesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_csvConexionesActionPerformed
-        // TODO add your handling code here:
+        javax.swing.JFileChooser fc = new javax.swing.JFileChooser();
+        javax.swing.filechooser.FileNameExtensionFilter filtro
+                = new javax.swing.filechooser.FileNameExtensionFilter("Archivos CSV (*.csv)", "csv");
+        fc.setFileFilter(filtro);
+        fc.setAcceptAllFileFilterUsed(false);
+        fc.setDialogTitle("Seleccionar archivo de conexiones");
+        int resultado = fc.showOpenDialog(this);
+        if (resultado == javax.swing.JFileChooser.APPROVE_OPTION) {
+            String ruta = fc.getSelectedFile().getAbsolutePath();
+            int cargadas = servicioCSV.cargarConexiones(ruta);
+            mostrarMensaje("Conexiones cargadas: " + cargadas);
+
+            if (cargadas > 0) {
+                csvConexiones.setEnabled(false);
+                csvProducto.setEnabled(true);
+            }
+        }
     }//GEN-LAST:event_csvConexionesActionPerformed
 
     private void csvProductoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_csvProductoActionPerformed
-        // TODO add your handling code here:
+        javax.swing.JFileChooser fc = new javax.swing.JFileChooser();
+        javax.swing.filechooser.FileNameExtensionFilter filtro
+                = new javax.swing.filechooser.FileNameExtensionFilter("Archivos CSV (*.csv)", "csv");
+        fc.setFileFilter(filtro);
+        fc.setAcceptAllFileFilterUsed(false);
+        fc.setDialogTitle("Seleccionar archivo de productos");
+        int resultado = fc.showOpenDialog(this);
+        if (resultado == javax.swing.JFileChooser.APPROVE_OPTION) {
+            String ruta = fc.getSelectedFile().getAbsolutePath();
+            int cargados = servicioCSV.cargarProductos(ruta);
+            mostrarMensaje("Productos cargados: " + cargados);
+            actualizarComboSucursales();
+            refrescarTabla();
+
+            if (cargados > 0) {
+                csvProducto.setEnabled(false);
+            }
+        }
     }//GEN-LAST:event_csvProductoActionPerformed
 
-   
+    private void jComboBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox1ActionPerformed
+        refrescarTabla();
+    }//GEN-LAST:event_jComboBox1ActionPerformed
+
+    private void agregarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_agregarActionPerformed
+        // Validar sucursal activa
+        if (jComboBox1.getSelectedItem() == null) {
+            mostrarMensaje("Error: No hay sucursal seleccionada.");
+            return;
+        }
+
+        // Leer campos
+        String nombre = inombre1.getText().trim();
+        String codigo = icodigo.getText().trim();
+        String categoria = icateg.getText().trim();
+        String fecha = ifecha.getText().trim();
+        String marca = imarca.getText().trim();
+        String precioStr = iprecio.getText().trim();
+        String stockStr = istock.getText().trim();
+
+        // Validaciones básicas
+        if (nombre.isEmpty() || codigo.isEmpty() || categoria.isEmpty()
+                || fecha.isEmpty() || marca.isEmpty() || precioStr.isEmpty() || stockStr.isEmpty()) {
+            mostrarMensaje("Error: Todos los campos son obligatorios.");
+            return;
+        }
+
+        double precio;
+        int stock;
+        try {
+            precio = Double.parseDouble(precioStr);
+            stock = Integer.parseInt(stockStr);
+        } catch (NumberFormatException e) {
+            mostrarMensaje("Error: Precio o stock no numéricos.");
+            return;
+        }
+
+        if (precio < 0 || stock < 0) {
+            mostrarMensaje("Error: Precio y stock deben ser positivos.");
+            return;
+        }
+
+        // Crear producto
+        Producto p = new Producto(nombre, codigo, categoria, fecha, marca, precio, stock);
+
+        // Agregar usando controlador
+        ResultadoOperacion res = controlador.agregarProducto(p);
+        mostrarMensaje(res.getMensaje());
+
+        if (res.isExitoso()) {
+            // Limpiar formulario
+            inombre1.setText("");
+            icodigo.setText("");
+            icateg.setText("");
+            ifecha.setText("");
+            imarca.setText("");
+            iprecio.setText("");
+            istock.setText("");
+            refrescarTabla();
+        }
+    }//GEN-LAST:event_agregarActionPerformed
+
+    private void deshacerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deshacerActionPerformed
+        Producto eliminado = controlador.deshacerUltimo();
+        if (eliminado != null) {
+            mostrarMensaje("Deshecha inserción de: " + eliminado.getNombre());
+            refrescarTabla();
+        } else {
+            mostrarMensaje("No hay operación para deshacer.");
+        }
+    }//GEN-LAST:event_deshacerActionPerformed
+
+    private void buscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buscarActionPerformed
+        if (jComboBox1.getSelectedItem() == null) {
+            mostrarMensaje("Error: No hay sucursal seleccionada.");
+            return;
+        }
+
+        javax.swing.table.DefaultTableModel modelo
+                = (javax.swing.table.DefaultTableModel) tablaProductos.getModel();
+        modelo.setRowCount(0);
+
+        // Criterio seleccionado
+        if (rnombre.isSelected()) {
+            String nombre = valor.getText().trim();
+            if (nombre.isEmpty()) {
+                mostrarMensaje("Ingrese un nombre para buscar.");
+                return;
+            }
+            Producto p = controlador.buscarPorNombre(nombre);
+            if (p != null) {
+                agregarProductoATabla(modelo, p);
+            }
+            mostrarMensaje(p != null ? "Encontrado." : "No encontrado.");
+
+        } else if (rcodigo.isSelected()) {
+            String codigo = valor.getText().trim();
+            if (codigo.isEmpty()) {
+                mostrarMensaje("Ingrese un código para buscar.");
+                return;
+            }
+            Producto p = controlador.buscarPorCodigo(codigo);
+            if (p != null) {
+                agregarProductoATabla(modelo, p);
+            }
+            mostrarMensaje(p != null ? "Encontrado." : "No encontrado.");
+
+        } else if (rcateg.isSelected()) {
+            String categoria = valor.getText().trim();
+            if (categoria.isEmpty()) {
+                mostrarMensaje("Ingrese una categoría.");
+                return;
+            }
+            ListaEnlazada lista = controlador.buscarPorCategoria(categoria);
+            if (lista != null) {
+                Producto[] arr = lista.listar();
+                for (Producto p : arr) {
+                    agregarProductoATabla(modelo, p);
+                }
+            }
+            mostrarMensaje("Resultados: " + modelo.getRowCount());
+
+        } else if (rRango.isSelected()) {
+            String ini = desde.getText().trim();
+            String fin = hasta.getText().trim();
+            if (ini.isEmpty() || fin.isEmpty()) {
+                mostrarMensaje("Ingrese ambas fechas.");
+                return;
+            }
+            ListaEnlazada lista = controlador.buscarPorRangoFechas(ini, fin);
+            if (lista != null) {
+                Producto[] arr = lista.listar();
+                for (Producto p : arr) {
+                    agregarProductoATabla(modelo, p);
+                }
+            }
+            mostrarMensaje("Resultados: " + modelo.getRowCount());
+        }
+    }//GEN-LAST:event_buscarActionPerformed
+
+    private void limpiarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_limpiarActionPerformed
+        valor.setText("");
+        desde.setText("");
+        hasta.setText("");
+        refrescarTabla(); // vuelve a mostrar todos los productos
+        mostrarMensaje("Búsqueda limpiada.");
+    }//GEN-LAST:event_limpiarActionPerformed
+
+    private void elimiarSelectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_elimiarSelectActionPerformed
+        int fila = tablaProductos.getSelectedRow();
+        if (fila == -1) {
+            mostrarMensaje("Seleccione un producto en la tabla.");
+            return;
+        }
+        String codigo = (String) tablaProductos.getValueAt(fila, 1); // columna 1: código
+        ResultadoOperacion res = controlador.eliminarProducto(codigo);
+        mostrarMensaje(res.getMensaje());
+        refrescarTabla();
+    }//GEN-LAST:event_elimiarSelectActionPerformed
+
+    private void verAvlActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_verAvlActionPerformed
+        if (jComboBox1.getSelectedItem() == null) {
+            mostrarMensaje("Seleccione una sucursal.");
+            return;
+        }
+        int idSuc = Integer.parseInt(((String) jComboBox1.getSelectedItem()).split(" - ")[0]);
+        controlador.setSucursalActiva(idSuc);
+        Inventario inv = controlador.getInventarioActivo();
+        if (inv != null) {
+            VisualizadorGraphviz.mostrarAVL(inv.getAvl(), this);
+        }
+    }//GEN-LAST:event_verAvlActionPerformed
+
+    private void verHashActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_verHashActionPerformed
+        if (jComboBox1.getSelectedItem() == null) {
+            return;
+        }
+        int idSuc = Integer.parseInt(((String) jComboBox1.getSelectedItem()).split(" - ")[0]);
+        controlador.setSucursalActiva(idSuc);
+        Inventario inv = controlador.getInventarioActivo();
+        if (inv != null) {
+            VisualizadorGraphviz.mostrarHash(inv.getHash(), this);
+        }
+    }//GEN-LAST:event_verHashActionPerformed
+
+    private void verBActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_verBActionPerformed
+        if (jComboBox1.getSelectedItem() == null) {
+            return;
+        }
+        int idSuc = Integer.parseInt(((String) jComboBox1.getSelectedItem()).split(" - ")[0]);
+        controlador.setSucursalActiva(idSuc);
+        Inventario inv = controlador.getInventarioActivo();
+        if (inv != null) {
+            VisualizadorGraphviz.mostrarB(inv.getArbolB(), this);
+        }
+    }//GEN-LAST:event_verBActionPerformed
+
+    private void verBplusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_verBplusActionPerformed
+        if (jComboBox1.getSelectedItem() == null) {
+            return;
+        }
+        int idSuc = Integer.parseInt(((String) jComboBox1.getSelectedItem()).split(" - ")[0]);
+        controlador.setSucursalActiva(idSuc);
+        Inventario inv = controlador.getInventarioActivo();
+        if (inv != null) {
+            VisualizadorGraphviz.mostrarBPlus(inv.getArbolBPlus(), this);
+        }
+    }//GEN-LAST:event_verBplusActionPerformed
+
+    private void agregarProductoATabla(javax.swing.table.DefaultTableModel modelo, Producto p) {
+        modelo.addRow(new Object[]{
+            p.getNombre(), p.getCodigoBarra(), p.getCategoria(),
+            p.getFechaCaducidad(), p.getMarca(), p.getPrecio(), p.getStock()
+        });
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton agregar;
@@ -588,6 +979,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     private javax.swing.JMenuItem csvSucursal;
     private javax.swing.JTextField desde;
     private javax.swing.JButton deshacer;
+    private javax.swing.JButton elimiarSelect;
     private javax.swing.JMenuItem grafo;
     private javax.swing.JMenuItem hash;
     private javax.swing.JTextField hasta;
@@ -603,7 +995,6 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
-    private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel15;
     private javax.swing.JLabel jLabel16;
@@ -636,6 +1027,11 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     private javax.swing.JLabel sucursal;
     private javax.swing.JLabel sucursalSeleccionado;
     private javax.swing.JTable tablaProductos;
+    private javax.swing.JLabel val;
     private javax.swing.JTextField valor;
+    private javax.swing.JButton verAvl;
+    private javax.swing.JButton verB;
+    private javax.swing.JButton verBplus;
+    private javax.swing.JButton verHash;
     // End of variables declaration//GEN-END:variables
 }
