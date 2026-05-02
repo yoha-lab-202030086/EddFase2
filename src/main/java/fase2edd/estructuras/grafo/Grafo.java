@@ -25,6 +25,21 @@ public class Grafo {
         }
         nodos[numNodos++] = new NodoGrafo(idSucursal);
     }
+    
+    // Devuelve el peso según el criterio (0=tiempo, 1=costo) de la arista origen->destino,
+    public double obtenerPesoArista(int origen, int destino, int criterio) {
+        NodoGrafo nodoOrigen = buscarNodo(origen);
+        if (nodoOrigen == null) {
+            return Double.MAX_VALUE;
+        }
+        Arista[] aristas = nodoOrigen.getAristas();
+        for (int i = 0; i < nodoOrigen.getNumAristas(); i++) {
+            if (aristas[i].getDestino() == destino) {
+                return (criterio == 0) ? aristas[i].getTiempo() : aristas[i].getCosto();
+            }
+        }
+        return Double.MAX_VALUE;
+    }
 
     // Agregar arista (con pesos)
     public void agregarArista(int origen, int destino, double tiempo, double costo) {

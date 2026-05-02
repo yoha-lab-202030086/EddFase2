@@ -8,12 +8,8 @@ import fase2edd.servicios.ServicioLog;
 import fase2edd.model.Producto;
 import fase2edd.model.ResultadoOperacion;
 import fase2edd.model.Sucursal;
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import javax.swing.JDialog;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JSlider;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 
 public class VentanaPrincipal extends javax.swing.JFrame {
 
@@ -22,13 +18,47 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     private ControladorGlobal controlador;
     private ServicioLog logg;
     private ServicioCSV servicioCSV;
+    private PanelSucursalesHelper panelSucursalesHelper;
+    private PanelRedSucursalesHelper panelRedHelper;
+    JLabel lblRutaResultado;
 
     public VentanaPrincipal() {
         initComponents();
+        jTabbedPane3.addChangeListener(e -> {
+            if (jTabbedPane3.getSelectedIndex() == 2) { // índice de Red de Sucursales
+                panelRedHelper.actualizarCombos();
+                panelRedHelper.dibujarGrafo();
+            }
+        });
+        lblRutaResultado = new JLabel();
+        controlador = new ControladorGlobal();
+        panelSucursalesHelper = new PanelSucursalesHelper(
+                controlador,
+                txtIdSucursal,
+                txtNombreSucursal,
+                txtUbicacion,
+                txtTiempoIngreso,
+                txtTiempoTraspaso,
+                txtTiempoDespacho,
+                tblSucursales,
+                output
+        );
+        panelSucursalesHelper.actualizarTabla();
+
+        panelRedHelper = new PanelRedSucursalesHelper(
+                controlador,
+                cmbOrigenConexion, cmbDestinoConexion, txtTiempoConexion, txtCostoConexion,
+                chkBidireccional, btnAgregarConexion, pnlGrafoDibujo,
+                cmbOrigenRuta, cmbDestinoRuta, rbnRutaTiempo, rbnRutaCosto,
+                btnCalcularRuta, lblRutaResultado, output
+        );
+        panelRedHelper.actualizarCombos(); // inicial
+        panelRedHelper.dibujarGrafo();
+
         csvConexiones.setEnabled(false);
         csvProducto.setEnabled(false);
         rangos.setVisible(false);
-        controlador = new ControladorGlobal();
+        //controlador = new ControladorGlobal();
         logg = new ServicioLog("errores.log");
         logg.abrir();
         servicioCSV = new ServicioCSV(controlador, logg);
@@ -38,7 +68,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
 
     }
 
-    private void actualizarComboSucursales() {
+    public void actualizarComboSucursales() {
         jComboBox1.removeAllItems();
         Sucursal[] sucursales = controlador.getCtrlSucursales().getSucursales();
         for (Sucursal s : sucursales) {
@@ -46,7 +76,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         }
     }
 
-    private void refrescarTabla() {
+    public void refrescarTabla() {
         javax.swing.table.DefaultTableModel modelo
                 = (javax.swing.table.DefaultTableModel) tablaProductos.getModel();
         modelo.setRowCount(0);
@@ -83,6 +113,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     private void initComponents() {
 
         buttonGroup1 = new javax.swing.ButtonGroup();
+        buttonGroup2 = new javax.swing.ButtonGroup();
         jTabbedPane3 = new javax.swing.JTabbedPane();
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
@@ -133,7 +164,46 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         verB = new javax.swing.JButton();
         verBplus = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
+        jLabel12 = new javax.swing.JLabel();
+        jLabel14 = new javax.swing.JLabel();
+        jLabel17 = new javax.swing.JLabel();
+        btnCrearSucursal = new javax.swing.JButton();
+        btnModificarSucursal = new javax.swing.JButton();
+        btnEliminarSucursal = new javax.swing.JButton();
+        btnLimpiarSucursal = new javax.swing.JButton();
+        txtIdSucursal = new javax.swing.JTextField();
+        txtUbicacion = new javax.swing.JTextField();
+        txtTiempoTraspaso = new javax.swing.JTextField();
+        jLabel18 = new javax.swing.JLabel();
+        jLabel19 = new javax.swing.JLabel();
+        jLabel20 = new javax.swing.JLabel();
+        txtNombreSucursal = new javax.swing.JTextField();
+        txtTiempoIngreso = new javax.swing.JTextField();
+        txtTiempoDespacho = new javax.swing.JTextField();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        tblSucursales = new javax.swing.JTable();
+        btnActualizarTabla = new javax.swing.JButton();
         jPanel3 = new javax.swing.JPanel();
+        jLabel21 = new javax.swing.JLabel();
+        jLabel22 = new javax.swing.JLabel();
+        jLabel23 = new javax.swing.JLabel();
+        jLabel24 = new javax.swing.JLabel();
+        jLabel25 = new javax.swing.JLabel();
+        chkBidireccional = new javax.swing.JCheckBox();
+        btnAgregarConexion = new javax.swing.JButton();
+        cmbDestinoConexion = new javax.swing.JComboBox<>();
+        cmbOrigenConexion = new javax.swing.JComboBox<>();
+        txtTiempoConexion = new javax.swing.JTextField();
+        txtCostoConexion = new javax.swing.JTextField();
+        jLabel28 = new javax.swing.JLabel();
+        cmbOrigenRuta = new javax.swing.JComboBox<>();
+        jLabel29 = new javax.swing.JLabel();
+        rbnRutaTiempo = new javax.swing.JRadioButton();
+        rbnRutaCosto = new javax.swing.JRadioButton();
+        btnCalcularRuta = new javax.swing.JButton();
+        jLabel27 = new javax.swing.JLabel();
+        cmbDestinoRuta = new javax.swing.JComboBox<>();
+        pnlGrafoDibujo = new javax.swing.JPanel();
         jPanel4 = new javax.swing.JPanel();
         output = new javax.swing.JLabel();
         jButton1 = new javax.swing.JButton();
@@ -509,7 +579,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
                         .addComponent(verB)
                         .addGap(83, 83, 83)
                         .addComponent(verBplus)))
-                .addGap(0, 119, Short.MAX_VALUE))
+                .addGap(0, 132, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -541,28 +611,321 @@ public class VentanaPrincipal extends javax.swing.JFrame {
 
         jTabbedPane3.addTab("Productos", jPanel1);
 
+        jLabel12.setFont(new java.awt.Font("Liberation Sans", 1, 18)); // NOI18N
+        jLabel12.setText("ID:");
+
+        jLabel14.setFont(new java.awt.Font("Liberation Sans", 1, 18)); // NOI18N
+        jLabel14.setText("Ubicacion:");
+
+        jLabel17.setFont(new java.awt.Font("Liberation Sans", 1, 18)); // NOI18N
+        jLabel17.setText("T. traspaso:");
+
+        btnCrearSucursal.setText("Crear");
+        btnCrearSucursal.addActionListener(this::btnCrearSucursalActionPerformed);
+
+        btnModificarSucursal.setText("Modificar");
+        btnModificarSucursal.addActionListener(this::btnModificarSucursalActionPerformed);
+
+        btnEliminarSucursal.setText("Eliminar");
+        btnEliminarSucursal.addActionListener(this::btnEliminarSucursalActionPerformed);
+
+        btnLimpiarSucursal.setText("Limpiar");
+        btnLimpiarSucursal.addActionListener(this::btnLimpiarSucursalActionPerformed);
+
+        txtIdSucursal.setFont(new java.awt.Font("Liberation Sans", 0, 18)); // NOI18N
+
+        txtUbicacion.setFont(new java.awt.Font("Liberation Sans", 0, 18)); // NOI18N
+
+        txtTiempoTraspaso.setFont(new java.awt.Font("Liberation Sans", 0, 18)); // NOI18N
+
+        jLabel18.setFont(new java.awt.Font("Liberation Sans", 1, 18)); // NOI18N
+        jLabel18.setText("T. despacho:");
+
+        jLabel19.setFont(new java.awt.Font("Liberation Sans", 1, 18)); // NOI18N
+        jLabel19.setText("Nombre:");
+
+        jLabel20.setFont(new java.awt.Font("Liberation Sans", 1, 18)); // NOI18N
+        jLabel20.setText("Tiempo Ingreso:");
+
+        txtNombreSucursal.setFont(new java.awt.Font("Liberation Sans", 0, 18)); // NOI18N
+
+        txtTiempoIngreso.setFont(new java.awt.Font("Liberation Sans", 0, 18)); // NOI18N
+
+        txtTiempoDespacho.setFont(new java.awt.Font("Liberation Sans", 0, 18)); // NOI18N
+
+        tblSucursales.setFont(new java.awt.Font("Liberation Sans", 0, 17)); // NOI18N
+        tblSucursales.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null}
+            },
+            new String [] {
+                "ID", "Nombre", "Ubicacion", "T. Ingreso", "T. Traspaso", "T. Despacho"
+            }
+        ));
+        jScrollPane2.setViewportView(tblSucursales);
+
+        btnActualizarTabla.setText("Actualizar Lista");
+        btnActualizarTabla.addActionListener(this::btnActualizarTablaActionPerformed);
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 1137, Short.MAX_VALUE)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addGap(70, 70, 70)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jLabel19)
+                    .addComponent(jLabel20)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(btnCrearSucursal)
+                            .addComponent(jLabel17)
+                            .addComponent(jLabel14)
+                            .addComponent(jLabel12))
+                        .addGap(18, 18, 18)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                .addComponent(txtIdSucursal, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 210, Short.MAX_VALUE)
+                                .addComponent(txtUbicacion, javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(txtTiempoTraspaso, javax.swing.GroupLayout.Alignment.LEADING))
+                            .addComponent(btnModificarSucursal))
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addGap(204, 204, 204)
+                                .addComponent(jLabel18))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(btnEliminarSucursal)
+                                .addGap(98, 98, 98)))))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addComponent(txtNombreSucursal)
+                        .addComponent(txtTiempoIngreso, javax.swing.GroupLayout.DEFAULT_SIZE, 225, Short.MAX_VALUE)
+                        .addComponent(txtTiempoDespacho))
+                    .addComponent(btnLimpiarSucursal))
+                .addGap(144, 144, 144))
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addGap(85, 85, 85)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(btnActualizarTabla)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 927, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(138, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 688, Short.MAX_VALUE)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGap(57, 57, 57)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel12)
+                            .addComponent(txtIdSucursal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(txtNombreSucursal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel19))
+                        .addGap(6, 6, 6)))
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel14)
+                        .addComponent(txtUbicacion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jLabel20)
+                    .addComponent(txtTiempoIngreso, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel17)
+                        .addComponent(txtTiempoTraspaso, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabel18))
+                    .addComponent(txtTiempoDespacho, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(33, 33, 33)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnCrearSucursal)
+                    .addComponent(btnModificarSucursal)
+                    .addComponent(btnEliminarSucursal)
+                    .addComponent(btnLimpiarSucursal))
+                .addGap(31, 31, 31)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 339, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(btnActualizarTabla)
+                .addContainerGap(46, Short.MAX_VALUE))
         );
 
         jTabbedPane3.addTab("Sucursales", jPanel2);
+
+        jLabel21.setFont(new java.awt.Font("Liberation Sans", 1, 24)); // NOI18N
+        jLabel21.setText("Conexiones");
+
+        jLabel22.setFont(new java.awt.Font("Liberation Sans", 1, 16)); // NOI18N
+        jLabel22.setText("Origen:");
+
+        jLabel23.setFont(new java.awt.Font("Liberation Sans", 1, 16)); // NOI18N
+        jLabel23.setText("Destino:");
+
+        jLabel24.setFont(new java.awt.Font("Liberation Sans", 1, 16)); // NOI18N
+        jLabel24.setText("Tiempo:");
+
+        jLabel25.setFont(new java.awt.Font("Liberation Sans", 1, 16)); // NOI18N
+        jLabel25.setText("Costo:");
+
+        chkBidireccional.setFont(new java.awt.Font("Liberation Sans", 1, 16)); // NOI18N
+        chkBidireccional.setText("Bidireccional");
+
+        btnAgregarConexion.setText("Agregar Conexion");
+        btnAgregarConexion.addActionListener(this::btnAgregarConexionActionPerformed);
+
+        cmbDestinoConexion.setFont(new java.awt.Font("Liberation Sans", 1, 14)); // NOI18N
+        cmbDestinoConexion.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+
+        cmbOrigenConexion.setFont(new java.awt.Font("Liberation Sans", 1, 14)); // NOI18N
+        cmbOrigenConexion.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+
+        txtTiempoConexion.setFont(new java.awt.Font("Liberation Sans", 1, 14)); // NOI18N
+
+        txtCostoConexion.setFont(new java.awt.Font("Liberation Sans", 1, 14)); // NOI18N
+
+        jLabel28.setFont(new java.awt.Font("Liberation Sans", 1, 16)); // NOI18N
+        jLabel28.setText("Origen:");
+
+        cmbOrigenRuta.setFont(new java.awt.Font("Liberation Sans", 1, 14)); // NOI18N
+        cmbOrigenRuta.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+
+        jLabel29.setFont(new java.awt.Font("Liberation Sans", 1, 16)); // NOI18N
+        jLabel29.setText("Destino:");
+
+        buttonGroup2.add(rbnRutaTiempo);
+        rbnRutaTiempo.setText("Tiempo");
+        rbnRutaTiempo.addActionListener(this::rbnRutaTiempoActionPerformed);
+
+        buttonGroup2.add(rbnRutaCosto);
+        rbnRutaCosto.setText("Costo");
+
+        btnCalcularRuta.setText("Calcular Ruta");
+        btnCalcularRuta.addActionListener(this::btnCalcularRutaActionPerformed);
+
+        jLabel27.setText("Ruta");
+
+        cmbDestinoRuta.setFont(new java.awt.Font("Liberation Sans", 1, 14)); // NOI18N
+        cmbDestinoRuta.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+
+        pnlGrafoDibujo.setBackground(new java.awt.Color(153, 255, 255));
+
+        javax.swing.GroupLayout pnlGrafoDibujoLayout = new javax.swing.GroupLayout(pnlGrafoDibujo);
+        pnlGrafoDibujo.setLayout(pnlGrafoDibujoLayout);
+        pnlGrafoDibujoLayout.setHorizontalGroup(
+            pnlGrafoDibujoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 780, Short.MAX_VALUE)
+        );
+        pnlGrafoDibujoLayout.setVerticalGroup(
+            pnlGrafoDibujoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 638, Short.MAX_VALUE)
+        );
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 1137, Short.MAX_VALUE)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(rbnRutaTiempo)
+                        .addGap(62, 62, 62)
+                        .addComponent(rbnRutaCosto)
+                        .addGap(166, 166, 166))
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(btnAgregarConexion)
+                            .addComponent(chkBidireccional)
+                            .addGroup(jPanel3Layout.createSequentialGroup()
+                                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel23)
+                                    .addComponent(jLabel25)
+                                    .addComponent(jLabel22)
+                                    .addComponent(jLabel24))
+                                .addGap(23, 23, 23)
+                                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(txtTiempoConexion, javax.swing.GroupLayout.PREFERRED_SIZE, 155, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(txtCostoConexion, javax.swing.GroupLayout.PREFERRED_SIZE, 153, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(cmbOrigenConexion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(cmbDestinoConexion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addGroup(jPanel3Layout.createSequentialGroup()
+                                .addGap(45, 45, 45)
+                                .addComponent(jLabel21))
+                            .addGroup(jPanel3Layout.createSequentialGroup()
+                                .addGap(127, 127, 127)
+                                .addComponent(jLabel27))
+                            .addGroup(jPanel3Layout.createSequentialGroup()
+                                .addGap(81, 81, 81)
+                                .addComponent(btnCalcularRuta))
+                            .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel3Layout.createSequentialGroup()
+                                    .addComponent(jLabel28)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(cmbOrigenRuta, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel3Layout.createSequentialGroup()
+                                    .addComponent(jLabel29)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                    .addComponent(cmbDestinoRuta, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                .addComponent(pnlGrafoDibujo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(160, 160, 160))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 688, Short.MAX_VALUE)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addGap(14, 14, 14)
+                        .addComponent(jLabel21)
+                        .addGap(26, 26, 26)
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(cmbOrigenConexion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel22))
+                        .addGap(18, 18, 18)
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(cmbDestinoConexion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel23))
+                        .addGap(28, 28, 28)
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(txtTiempoConexion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel24))
+                        .addGap(18, 18, 18)
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel25)
+                            .addGroup(jPanel3Layout.createSequentialGroup()
+                                .addComponent(txtCostoConexion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(chkBidireccional)
+                                .addGap(18, 18, 18)
+                                .addComponent(btnAgregarConexion)))
+                        .addGap(21, 21, 21)
+                        .addComponent(jLabel27)
+                        .addGap(18, 18, 18)
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel28)
+                            .addComponent(cmbOrigenRuta, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel29)
+                            .addComponent(cmbDestinoRuta, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(22, 22, 22)
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(rbnRutaTiempo)
+                            .addComponent(rbnRutaCosto))
+                        .addGap(18, 18, 18)
+                        .addComponent(btnCalcularRuta))
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(pnlGrafoDibujo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(56, Short.MAX_VALUE))
         );
 
         jTabbedPane3.addTab("Red de Sucursales", jPanel3);
@@ -571,11 +934,11 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         jPanel4.setLayout(jPanel4Layout);
         jPanel4Layout.setHorizontalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 1137, Short.MAX_VALUE)
+            .addGap(0, 1150, Short.MAX_VALUE)
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 688, Short.MAX_VALUE)
+            .addGap(0, 700, Short.MAX_VALUE)
         );
 
         jTabbedPane3.addTab("Transferencias", jPanel4);
@@ -628,19 +991,19 @@ public class VentanaPrincipal extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addGap(18, 18, 18)
                 .addComponent(output, javax.swing.GroupLayout.PREFERRED_SIZE, 974, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jButton1)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(75, Short.MAX_VALUE))
             .addGroup(layout.createSequentialGroup()
-                .addComponent(jTabbedPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 1137, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+                .addComponent(jTabbedPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(15, 15, 15)
-                .addComponent(jTabbedPane3)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addContainerGap(15, Short.MAX_VALUE)
+                .addComponent(jTabbedPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 735, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(output, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, 84, Short.MAX_VALUE))
@@ -959,6 +1322,45 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_verBplusActionPerformed
 
+    private void btnCrearSucursalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCrearSucursalActionPerformed
+        panelSucursalesHelper.crearSucursal();
+        actualizarComboSucursales(); // Para que el combo de Productos se refresque
+    }//GEN-LAST:event_btnCrearSucursalActionPerformed
+
+    private void btnActualizarTablaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnActualizarTablaActionPerformed
+        panelSucursalesHelper.actualizarTabla();
+
+    }//GEN-LAST:event_btnActualizarTablaActionPerformed
+
+    private void btnModificarSucursalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnModificarSucursalActionPerformed
+        panelSucursalesHelper.modificarSucursal();
+    }//GEN-LAST:event_btnModificarSucursalActionPerformed
+
+    private void btnEliminarSucursalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarSucursalActionPerformed
+        panelSucursalesHelper.eliminarSucursal();
+        actualizarComboSucursales();
+    }//GEN-LAST:event_btnEliminarSucursalActionPerformed
+
+    private void btnLimpiarSucursalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLimpiarSucursalActionPerformed
+        panelSucursalesHelper.limpiarSucursal();
+    }//GEN-LAST:event_btnLimpiarSucursalActionPerformed
+
+    private void btnCalcularRutaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCalcularRutaActionPerformed
+        panelRedHelper.calcularRuta();
+
+        ///lblRutaResultado.setText("HOlaaaaaaa");
+
+        JOptionPane.showMessageDialog(null, lblRutaResultado, "Ruta:", JOptionPane.INFORMATION_MESSAGE);
+    }//GEN-LAST:event_btnCalcularRutaActionPerformed
+
+    private void rbnRutaTiempoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rbnRutaTiempoActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_rbnRutaTiempoActionPerformed
+
+    private void btnAgregarConexionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarConexionActionPerformed
+        panelRedHelper.agregarConexion();
+    }//GEN-LAST:event_btnAgregarConexionActionPerformed
+
     private void agregarProductoATabla(javax.swing.table.DefaultTableModel modelo, Producto p) {
         modelo.addRow(new Object[]{
             p.getNombre(), p.getCodigoBarra(), p.getCategoria(),
@@ -969,11 +1371,24 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton agregar;
     private javax.swing.JMenuItem avl;
+    private javax.swing.JButton btnActualizarTabla;
+    private javax.swing.JButton btnAgregarConexion;
+    private javax.swing.JButton btnCalcularRuta;
+    private javax.swing.JButton btnCrearSucursal;
+    private javax.swing.JButton btnEliminarSucursal;
+    private javax.swing.JButton btnLimpiarSucursal;
+    private javax.swing.JButton btnModificarSucursal;
     private javax.swing.JMenuItem btree;
     private javax.swing.JMenuItem btreeplus;
     private javax.swing.JButton buscar;
     private javax.swing.JPanel busqueda;
     private javax.swing.ButtonGroup buttonGroup1;
+    private javax.swing.ButtonGroup buttonGroup2;
+    private javax.swing.JCheckBox chkBidireccional;
+    private javax.swing.JComboBox<String> cmbDestinoConexion;
+    private javax.swing.JComboBox<String> cmbDestinoRuta;
+    private javax.swing.JComboBox<String> cmbOrigenConexion;
+    private javax.swing.JComboBox<String> cmbOrigenRuta;
     private javax.swing.JMenuItem csvConexiones;
     private javax.swing.JMenuItem csvProducto;
     private javax.swing.JMenuItem csvSucursal;
@@ -995,10 +1410,24 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
+    private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
+    private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel15;
     private javax.swing.JLabel jLabel16;
+    private javax.swing.JLabel jLabel17;
+    private javax.swing.JLabel jLabel18;
+    private javax.swing.JLabel jLabel19;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel20;
+    private javax.swing.JLabel jLabel21;
+    private javax.swing.JLabel jLabel22;
+    private javax.swing.JLabel jLabel23;
+    private javax.swing.JLabel jLabel24;
+    private javax.swing.JLabel jLabel25;
+    private javax.swing.JLabel jLabel27;
+    private javax.swing.JLabel jLabel28;
+    private javax.swing.JLabel jLabel29;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
@@ -1016,17 +1445,30 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel9;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTabbedPane jTabbedPane3;
     private javax.swing.JButton limpiar;
     private javax.swing.JLabel output;
+    private javax.swing.JPanel pnlGrafoDibujo;
     private javax.swing.JRadioButton rRango;
     private javax.swing.JPanel rangos;
+    private javax.swing.JRadioButton rbnRutaCosto;
+    private javax.swing.JRadioButton rbnRutaTiempo;
     private javax.swing.JRadioButton rcateg;
     private javax.swing.JRadioButton rcodigo;
     private javax.swing.JRadioButton rnombre;
     private javax.swing.JLabel sucursal;
     private javax.swing.JLabel sucursalSeleccionado;
     private javax.swing.JTable tablaProductos;
+    private javax.swing.JTable tblSucursales;
+    private javax.swing.JTextField txtCostoConexion;
+    private javax.swing.JTextField txtIdSucursal;
+    private javax.swing.JTextField txtNombreSucursal;
+    private javax.swing.JTextField txtTiempoConexion;
+    private javax.swing.JTextField txtTiempoDespacho;
+    private javax.swing.JTextField txtTiempoIngreso;
+    private javax.swing.JTextField txtTiempoTraspaso;
+    private javax.swing.JTextField txtUbicacion;
     private javax.swing.JLabel val;
     private javax.swing.JTextField valor;
     private javax.swing.JButton verAvl;

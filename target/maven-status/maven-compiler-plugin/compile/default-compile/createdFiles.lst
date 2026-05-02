@@ -14,6 +14,7 @@ fase2edd/estructuras/listas/ListaEnlazada.class
 fase2edd/estructuras/cola/Cola.class
 fase2edd/model/Conexion.class
 fase2edd/control/ControladorSucursales.class
+fase2edd/vista/PanelSucursalesHelper.class
 fase2edd/estructuras/bplustree/ArbolBPlus.class
 fase2edd/estructuras/listas/pila/NodoPila.class
 fase2edd/control/ControladorInventario.class
@@ -24,6 +25,7 @@ fase2edd/estructuras/grafo/Grafo.class
 fase2edd/control/ControladorGlobal.class
 fase2edd/Fase2Edd.class
 fase2edd/control/ControladorTransferencias.class
+fase2edd/vista/PanelRedSucursalesHelper.class
 fase2edd/estructuras/btree/ArbolB.class
 fase2edd/util/Rutas.class
 fase2edd/estructuras/listas/NodoLista.class

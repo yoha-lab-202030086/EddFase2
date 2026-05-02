@@ -29,6 +29,15 @@ public class ControladorGlobal {
         return inventarioCtrl.getInventario();
     }
 
+    public boolean modificarSucursal(int id, String nombre, String ubicacion,
+            double tIngreso, double tTraspaso, double intervalo) {
+        return sucursalesCtrl.modificarSucursal(id, nombre, ubicacion, tIngreso, tTraspaso, intervalo);
+    }
+
+    public boolean eliminarSucursal(int id) {
+        return sucursalesCtrl.eliminarSucursal(id);
+    }
+
     // Asignar el controlador de inventario de la sucursal activa
     public void setSucursalActiva(int idSucursal) {
         var s = sucursalesCtrl.buscarPorId(idSucursal);
