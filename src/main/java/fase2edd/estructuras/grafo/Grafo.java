@@ -12,7 +12,7 @@ public class Grafo {
         numNodos = 0;
     }
 
-    // Agregar un nodo (sucursal)
+   
     public void agregarNodo(int idSucursal) {
         if (buscarNodo(idSucursal) != null) return; // ya existe
         if (numNodos == capacidadNodos) {
@@ -26,7 +26,7 @@ public class Grafo {
         nodos[numNodos++] = new NodoGrafo(idSucursal);
     }
     
-    // Devuelve el peso según el criterio (0=tiempo, 1=costo) de la arista origen->destino,
+   
     public double obtenerPesoArista(int origen, int destino, int criterio) {
         NodoGrafo nodoOrigen = buscarNodo(origen);
         if (nodoOrigen == null) {
@@ -41,14 +41,14 @@ public class Grafo {
         return Double.MAX_VALUE;
     }
 
-    // Agregar arista (con pesos)
+    
     public void agregarArista(int origen, int destino, double tiempo, double costo) {
         NodoGrafo nodoOrigen = buscarNodo(origen);
         if (nodoOrigen == null) {
             agregarNodo(origen);
             nodoOrigen = buscarNodo(origen);
         }
-        // Evitar duplicados: si ya existe arista entre los mismos, se actualiza
+        //si ya existe arista entre los mismos, se actualiza
         Arista[] existentes = nodoOrigen.getAristas();
         for (int i = 0; i < nodoOrigen.getNumAristas(); i++) {
             if (existentes[i].getDestino() == destino) {
@@ -67,9 +67,7 @@ public class Grafo {
         return null;
     }
 
-    // ========== RUTA MÁS CORTA (Dijkstra) ==========
-    // criterio: 0 para tiempo, 1 para costo
-    // Devuelve un arreglo con los ids de la ruta, o null si no hay ruta
+    
     public int[] rutaMasCorta(int idOrigen, int idDestino, int criterio) {
         // Número de nodos en el grafo
         int n = numNodos;
@@ -94,11 +92,11 @@ public class Grafo {
         }
         dist[origenIdx] = 0;
 
-        // Procesar todos los nodos
+        
         for (int count = 0; count < n; count++) {
             int u = -1;
             double minDist = Double.MAX_VALUE;
-            // Seleccionar nodo no visitado con menor distancia
+            
             for (int i = 0; i < n; i++) {
                 if (!visitado[i] && dist[i] < minDist) {
                     minDist = dist[i];
@@ -127,10 +125,10 @@ public class Grafo {
             }
         }
 
-        // Reconstruir ruta
+        
         if (dist[destinoIdx] == Double.MAX_VALUE) return null;
 
-        // Contar nodos de la ruta
+        
         int[] temp = new int[n];
         int count = 0;
         int actual = destinoIdx;
@@ -139,7 +137,7 @@ public class Grafo {
             actual = anterior[actual];
         }
 
-        // Invertir para que vaya de origen a destino
+       
         int[] ruta = new int[count];
         for (int i = 0; i < count; i++) {
             ruta[i] = temp[count - 1 - i];
@@ -147,7 +145,7 @@ public class Grafo {
         return ruta;
     }
 
-    // Para visualización: devuelve todos los nodos
+    
     public NodoGrafo[] getNodos() {
         NodoGrafo[] resultado = new NodoGrafo[numNodos];
         for (int i = 0; i < numNodos; i++) {

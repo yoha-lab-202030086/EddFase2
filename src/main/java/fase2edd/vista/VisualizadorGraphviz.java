@@ -183,10 +183,8 @@ public class VisualizadorGraphviz {
 
     private static void mostrarGrafico(String dot, String titulo, Component parent) {
         try {
-            // Corregido: Instanciamos el Parser para evitar el error de contexto estático
             MutableGraph g = new Parser().read(dot);
 
-            // Corregido: Usamos .toImage() directamente, sin limitar el ancho, para obtener la máxima calidad y detalle
             BufferedImage bufImg = Graphviz.fromGraph(g)
                     .render(Format.PNG)
                     .toImage();
@@ -194,14 +192,12 @@ public class VisualizadorGraphviz {
             ImageIcon icon = new ImageIcon(bufImg);
             JLabel label = new JLabel(icon);
 
-            // Asignamos el tamaño preferido real para que el JScrollPane active las barras de desplazamiento
             label.setPreferredSize(new Dimension(bufImg.getWidth(), bufImg.getHeight()));
 
             JScrollPane scroll = new JScrollPane(label,
                     JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
                     JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
 
-            // Configuramos la velocidad del scroll
             scroll.getVerticalScrollBar().setUnitIncrement(16);
             scroll.getHorizontalScrollBar().setUnitIncrement(16);
             scroll.setBorder(BorderFactory.createEmptyBorder());
@@ -229,9 +225,7 @@ public class VisualizadorGraphviz {
         }
     }
 
-    /**
-     * Guarda la imagen generada a partir de un string DOT en un archivo PNG.
-     */
+    
     public static void exportarAGrafico(String dot, String titulo, Component parent) {
         JFileChooser fc = new JFileChooser();
         fc.setDialogTitle("Guardar " + titulo + " como PNG");
@@ -249,10 +243,10 @@ public class VisualizadorGraphviz {
         }
 
         try {
-            // Corregimos: Instanciamos el Parser para evitar el error de contexto estático
+           
             MutableGraph g = new Parser().read(dot);
 
-            // Corregimos: Renderizamos y guardamos directamente al archivo
+           
             Graphviz.fromGraph(g).width(800).render(Format.PNG).toFile(archivo);
 
             JOptionPane.showMessageDialog(parent,

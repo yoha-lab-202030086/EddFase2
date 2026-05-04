@@ -52,7 +52,7 @@ public class ArbolAVL {
         return nodo;
     }
 
-    // ========== BÚSQUEDA POR NOMBRE ==========
+    // Busca por nombre
     public Producto buscarPorNombre(String nombre) {
         return buscarRec(raiz, nombre);
     }
@@ -69,7 +69,7 @@ public class ArbolAVL {
         return buscarRec(nodo.getDerecho(), nombre);
     }
 
-    // ========== ELIMINACIÓN POR NOMBRE ==========
+    // Este metodo elimina por nomre
     public void eliminar(String nombre) {
         raiz = eliminarRec(raiz, nombre);
     }
@@ -120,7 +120,7 @@ public class ArbolAVL {
         return nodo;
     }
 
-    // ========== RECORRIDO IN-ORDER (ordenado por nombre) ==========
+    // Hace el recorrido in orden
     public Producto[] inOrden() {
         Producto[] arr = new Producto[contarNodos(raiz)];
         int[] idx = {0};
@@ -136,7 +136,7 @@ public class ArbolAVL {
         }
     }
 
-    // ========== MÉTODOS AUXILIARES ==========
+   
     private int altura(NodoAVL nodo) {
         return (nodo == null) ? 0 : nodo.getAltura();
     }

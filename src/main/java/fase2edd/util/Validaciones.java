@@ -2,7 +2,7 @@ package fase2edd.util;
 
 public class Validaciones {
 
-    // Verifica que una cadena no sea nula ni vacía
+   
     public static boolean esStringValido(String str) {
         return str != null && !str.trim().isEmpty();
     }
@@ -16,7 +16,7 @@ public class Validaciones {
         return true;
     }
 
-    // Verifica que una fecha tenga formato AAAA-MM-DD (sin usar librerías de fecha)
+  
     public static boolean esFechaValida(String fecha) {
         if (!esStringValido(fecha)) return false;
         if (fecha.length() != 10) return false;
@@ -38,22 +38,22 @@ public class Validaciones {
         }
     }
 
-    // Verifica que el precio sea un número positivo
+    
     public static boolean esPrecioValido(double precio) {
         return precio >= 0.0;
     }
 
-    // Verifica que el stock sea un entero no negativo
+    
     public static boolean esStockValido(int stock) {
         return stock >= 0;
     }
 
-    // Verifica que el ID de sucursal sea positivo
+    
     public static boolean esIdSucursalValido(int id) {
         return id > 0;
     }
 
-    // Verifica que el tiempo o costo de conexión sea no negativo
+    
     public static boolean esPesoValido(double peso) {
         return peso >= 0.0;
     }

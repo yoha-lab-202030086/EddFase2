@@ -17,8 +17,6 @@ public class ArbolBPlus {
     public NodoBPlus getRaiz() {
     return raiz;
 }
-
-    // ===================== INSERCIÓN =====================
     public void insertar(Producto p) {
         String clave = p.getCategoria();
         if (raiz == null) {
@@ -99,23 +97,22 @@ public class ArbolBPlus {
             hijo.setSiguienteHoja(nuevo);
         }
 
-        // Mover hijos del padre para insertar nuevo
+        
         for (int j = padre.getN(); j >= idx + 1; j--) {
             padre.getHijos()[j + 1] = padre.getHijos()[j];
         }
         padre.getHijos()[idx + 1] = nuevo;
 
-        // Mover claves del padre para subir la clave separadora
+        
         for (int j = padre.getN() - 1; j >= idx; j--) {
             padre.getClaves()[j + 1] = padre.getClaves()[j];
         }
-        // La clave que sube es la primera clave del nuevo nodo (en B+ se sube una copia)
+       
         padre.getClaves()[idx] = nuevo.getClaves()[0];
         padre.setN(padre.getN() + 1);
     }
 
-    //BÚSQUEDA POR CATEGORÍA 
-    // Retorna todos los productos de esa categoría usando las hojas enlazadas
+    //Busqueda por categoria
     public ListaEnlazada buscarPorCategoria(String categoria) {
         ListaEnlazada resultado = new ListaEnlazada();
         if (raiz == null) return resultado;
@@ -145,7 +142,6 @@ public class ArbolBPlus {
         return resultado;
     }
 
-    //ELIMINACIÓN =====================
     public void eliminar(String categoria, String codigoBarra) {
         if (raiz == null) return;
         eliminarRec(raiz, categoria, codigoBarra);
@@ -216,7 +212,7 @@ public class ArbolBPlus {
                 }
             }
 
-            // Prestar la última clave del hermano izquierdo
+            
             if (hijo.isHoja()) {
                 hijo.getClaves()[0] = hermano.getClaves()[hermano.getN() - 1];
                 hijo.getProductos()[0] = hermano.getProductos()[hermano.getN() - 1];
@@ -227,10 +223,10 @@ public class ArbolBPlus {
             hijo.setN(hijo.getN() + 1);
             hermano.setN(hermano.getN() - 1);
 
-            // Actualizar clave separadora en el padre
+            
             padre.getClaves()[idxHijo - 1] = (hijo.isHoja() ? hijo.getClaves()[0] : hermano.getClaves()[hermano.getN() - 1]);
         }
-        // Intentar préstamo del hermano derecho
+        
         else if (idxHijo < padre.getN() && padre.getHijos()[idxHijo + 1].getN() >= d) {
             NodoBPlus hermano = padre.getHijos()[idxHijo + 1];
 
@@ -243,7 +239,7 @@ public class ArbolBPlus {
             }
             hijo.setN(hijo.getN() + 1);
 
-            // Desplazar en hermano
+            
             for (int i = 1; i < hermano.getN(); i++) {
                 hermano.getClaves()[i - 1] = hermano.getClaves()[i];
                 if (hermano.isHoja()) hermano.getProductos()[i - 1] = hermano.getProductos()[i];
@@ -292,7 +288,7 @@ public class ArbolBPlus {
             izq.setN(izq.getN() + der.getN());
         }
 
-        // Eliminar der y ajustar padre
+        
         for (int i = idxIzq + 1; i < padre.getN() - 1; i++) {
             padre.getClaves()[i] = padre.getClaves()[i + 1];
         }
@@ -306,7 +302,7 @@ public class ArbolBPlus {
         return raiz == null;
     }
 
-    // Recorrido completo para visualización (devuelve arreglo con todos los productos en orden)
+   
     public Producto[] obtenerTodos() {
         ListaEnlazada lista = new ListaEnlazada();
         if (raiz != null) {

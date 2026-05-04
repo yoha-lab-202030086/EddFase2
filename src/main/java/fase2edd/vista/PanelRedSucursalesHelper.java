@@ -66,18 +66,18 @@ public class PanelRedSucursalesHelper {
         this.lblRutaResultado = lblRutaResultado;
         this.output = output;
 
-        // Agrupar radio buttons de criterio
+       
         ButtonGroup grupo = new ButtonGroup();
         grupo.add(rbnRutaTiempo);
         grupo.add(rbnRutaCosto);
         rbnRutaTiempo.setSelected(true);
 
-        // Configurar panel de dibujo con layout para agregar scroll
+       
         pnlGrafoDibujo.setLayout(new BorderLayout());
         dibujarGrafo();  // intento inicial (vacío)
     }
 
-    // Llena los combos con las sucursales existentes
+    
     public void actualizarCombos() {
         cmbOrigenConexion.removeAllItems();
         cmbDestinoConexion.removeAllItems();
@@ -100,7 +100,7 @@ public class PanelRedSucursalesHelper {
         }
     }
 
-    // Agrega una conexión usando los valores de los campos
+    
     public void agregarConexion() {
         String selOrigen = (String) cmbOrigenConexion.getSelectedItem();
         String selDestino = (String) cmbDestinoConexion.getSelectedItem();
@@ -203,7 +203,7 @@ public void dibujarGrafo() {
     pnlGrafoDibujo.repaint();
 }
 
-    // Calcula ruta más corta y muestra el resultado en lblRutaResultado
+    
     public void calcularRuta() {
         String selOrigen = (String) cmbOrigenRuta.getSelectedItem();
         String selDestino = (String) cmbDestinoRuta.getSelectedItem();

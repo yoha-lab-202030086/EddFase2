@@ -24,7 +24,7 @@ public class PanelTransferenciasHelper {
     private JLabel lblEstadoProducto;
     private JLabel lblETA;
     private JLabel lblUltimoEvento;
-    private JLabel output; // barra de estado principal
+    private JLabel output; 
     private int[] rutaActual;
 
     public PanelTransferenciasHelper(ControladorGlobal controlador,
@@ -58,25 +58,21 @@ public class PanelTransferenciasHelper {
         this.lblUltimoEvento = lblUltimoEvento;
         this.output = output;
 
-        // Agrupar radio buttons de criterio
         ButtonGroup grupo = new ButtonGroup();
         grupo.add(rbnTransferenciaTiempo);
         grupo.add(rbnTransferenciaCosto);
         rbnTransferenciaTiempo.setSelected(true);
 
-        // Configurar áreas de texto como solo lectura
+       
         txtColaIngreso.setEditable(false);
         txtColaPreparacion.setEditable(false);
         txtColaSalida.setEditable(false);
 
-        // Evento al cambiar sucursal origen: actualizar combo de productos
         cmbSucursalOrigenTransferencia.addActionListener(e -> cargarProductosOrigen());
-        // Evento al cambiar sucursal origen/destino: actualizar visualización de colas (de la origen)
         cmbSucursalOrigenTransferencia.addActionListener(e -> actualizarColasVisual());
         cmbSucursalDestinoTransferencia.addActionListener(e -> actualizarColasVisual());
     }
 
-    // Llena los combos de sucursales
     public void actualizarCombos() {
         cmbSucursalOrigenTransferencia.removeAllItems();
         cmbSucursalDestinoTransferencia.removeAllItems();
@@ -94,7 +90,6 @@ public class PanelTransferenciasHelper {
         actualizarColasVisual();
     }
 
-    // Carga los productos de la sucursal origen en cmbProductoTransferencia
     private void cargarProductosOrigen() {
         cmbProductoTransferencia.removeAllItems();
         String selOrigen = (String) cmbSucursalOrigenTransferencia.getSelectedItem();
@@ -208,7 +203,6 @@ public class PanelTransferenciasHelper {
         return sb.toString();
     }
 
-    // Iniciar transferencia del producto seleccionado
     public void iniciarTransferencia() {
         String selOrigen = (String) cmbSucursalOrigenTransferencia.getSelectedItem();
         String selDestino = (String) cmbSucursalDestinoTransferencia.getSelectedItem();
@@ -264,7 +258,6 @@ public class PanelTransferenciasHelper {
         return sb.toString();
     }
 
-    // Procesar siguiente paso de la simulación
     public void procesarSiguientePaso() {
         SimuladorDespacho sim = controlador.getCtrlTransferencias().getSimulador();
         boolean continuar = controlador.getCtrlTransferencias().procesarSiguientePaso();

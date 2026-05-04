@@ -11,7 +11,7 @@ public class NodoBPlus {
     private Producto[] productos;  // solo en hojas: productos correspondientes
     private NodoBPlus[] hijos;     // solo en nodos internos (tamaño 2*d+1)
     private boolean hoja;
-    private NodoBPlus siguienteHoja;  // enlace entre hojas para recorrido secuencial
+    private NodoBPlus siguienteHoja;  
 
     public NodoBPlus(int d, boolean hoja) {
         this.d = d;

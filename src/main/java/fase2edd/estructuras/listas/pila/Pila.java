@@ -13,7 +13,7 @@ public class Pila {
         tamanio = 0;
     }
 
-    // Apila un producto
+
     public void push(Producto p) {
         NodoPila nuevo = new NodoPila(p);
         nuevo.setAbajo(tope);
@@ -21,7 +21,7 @@ public class Pila {
         tamanio++;
     }
 
-    // Desapila y devuelve el producto superior
+    
     public Producto pop() {
         if (tope == null) return null;
         Producto dato = tope.getDato();
@@ -30,7 +30,6 @@ public class Pila {
         return dato;
     }
 
-    // Consulta el tope sin eliminarlo
     public Producto peek() {
         return (tope != null) ? tope.getDato() : null;
     }

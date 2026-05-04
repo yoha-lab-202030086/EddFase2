@@ -13,7 +13,6 @@ public class ListaEnlazada {
         tamanio = 0;
     }
 
-    // Agrega al final de la lista
     public void insertar(Producto p) {
         NodoLista nuevo = new NodoLista(p);
         if (cabeza == null) {
@@ -28,7 +27,7 @@ public class ListaEnlazada {
         tamanio++;
     }
 
-    // Busca un producto por código de barras (secuencial)
+    
     public Producto buscarPorCodigo(String codigo) {
         NodoLista actual = cabeza;
         while (actual != null) {
@@ -40,7 +39,7 @@ public class ListaEnlazada {
         return null;
     }
 
-    // Elimina un producto por código de barras
+   
     public Producto eliminarPorCodigo(String codigo) {
         if (cabeza == null) return null;
 
@@ -64,7 +63,7 @@ public class ListaEnlazada {
         return null;
     }
 
-    // Devuelve todos los productos como arreglo (para recorridos)
+    
     public Producto[] listar() {
         Producto[] arr = new Producto[tamanio];
         NodoLista actual = cabeza;

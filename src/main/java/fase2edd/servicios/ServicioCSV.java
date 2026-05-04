@@ -17,8 +17,8 @@ public class ServicioCSV {
     }
 
     /**
-     * Carga el catálogo de productos desde un archivo CSV. Formato: SucursalID,
-     * Nombre, CodigoBarra, Categoria, FechaCaducidad, Marca, Precio, Stock
+     * Formato: SucursalID,Nombre, CodigoBarra, Categoria, FechaCaducidad, Marca, Precio, Stock
+     * 
      */
     public int cargarProductos(String rutaArchivo) {
         logger.logEvento("Cargando productos desde: " + rutaArchivo);
@@ -37,7 +37,7 @@ public class ServicioCSV {
                 }
 
                 if (linea.trim().isEmpty()) {
-                    continue; // ignorar líneas vacías
+                    continue;
                 }
                 String[] partes = linea.split(",");
                 if (partes.length < 8) {
@@ -54,7 +54,7 @@ public class ServicioCSV {
                 String precioStr = partes[6].trim();
                 String stockStr = partes[7].trim();
 
-                // Validaciones básicas
+               
                 if (!Validaciones.esIdSucursalValido(Integer.parseInt(idSucursalStr))) {
                     logger.logError("ID de sucursal inválido en línea " + numLinea + ": " + idSucursalStr);
                     continue;
@@ -107,8 +107,8 @@ public class ServicioCSV {
     }
 
     /**
-     * Carga sucursales desde CSV. Formato: ID, Nombre, Ubicación, t_ingreso,
-     * t_traspaso, t_despacho
+     * Formato: ID, Nombre, Ubicación, t_ingreso,t_traspaso, t_despacho
+     * 
      */
     public int cargarSucursales(String rutaArchivo) {
         logger.logEvento("Cargando sucursales desde: " + rutaArchivo);
@@ -167,10 +167,7 @@ public class ServicioCSV {
         return cargadas;
     }
 
-    /**
-     * Carga conexiones entre sucursales desde CSV. Formato: OrigenID,
-     * DestinoID, Tiempo, Costo
-     */
+    
     public int cargarConexiones(String rutaArchivo) {
         logger.logEvento("Cargando conexiones desde: " + rutaArchivo);
         int cargadas = 0;

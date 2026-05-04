@@ -29,7 +29,7 @@ public class Inventario {
         pilaRollback = new Pila();
     }
 
-    // Inserción atómica: o se inserta en todas o se revierte
+    
     public ResultadoOperacion insertarProducto(Producto p) {
         // Verificar duplicado por código de barras
         if (hash.buscar(p.getCodigoBarra()) != null) {
@@ -48,19 +48,17 @@ public class Inventario {
 
         try {
             // Insertar en cada estructura
-            avl.insertar(p);                // 1. AVL (por nombre)
-            hash.insertar(p);               // 2. Hash (por código)
-            arbolB.insertar(p);             // 3. B (por fecha)
-            arbolBPlus.insertar(p);         // 4. B+ (por categoría)
-            lista.insertar(p);              // 5. Lista enlazada
+            avl.insertar(p);               
+            hash.insertar(p);               
+            arbolB.insertar(p);             
+            arbolBPlus.insertar(p);         
+            lista.insertar(p);              
 
-            // Si todo fue exitoso, guardamos en pila de rollback (por si luego se necesita deshacer)
+          
             pilaRollback.push(p);
             return new ResultadoOperacion(true, "Producto insertado correctamente");
         } catch (Exception e) {
-            // Falló alguna inserción: hay que revertir las que sí se hicieron
-            // Intentamos eliminar de las estructuras que ya recibieron el producto
-            // Nota: si falla en medio, puede ser que algunas no tengan el producto; los eliminamos por código
+            
             avl.eliminar(p.getNombre());
             hash.eliminar(p.getCodigoBarra());
             arbolB.eliminar(p.getFechaCaducidad(), p.getCodigoBarra());
@@ -70,7 +68,6 @@ public class Inventario {
         }
     }
 
-    // Eliminación atómica
     public ResultadoOperacion eliminarProducto(String codigoBarra) {
         Producto p = hash.buscar(codigoBarra);
         if (p == null) {
@@ -88,7 +85,6 @@ public class Inventario {
         }
     }
 
-    // Búsquedas
     public Producto buscarPorNombre(String nombre) {
         return avl.buscarPorNombre(nombre);
     }
@@ -105,7 +101,7 @@ public class Inventario {
         return arbolB.buscarPorRango(fechaInicio, fechaFin);
     }
 
-    // Listado ordenado (AVL in-order)
+  
     public Producto[] listarPorNombre() {
         return avl.inOrden();
     }
@@ -114,7 +110,7 @@ public class Inventario {
         return lista;
     }
 
-    // Para rollback manual (deshacer última inserción)
+   
     public Producto deshacerUltimaInsercion() {
         Producto p = pilaRollback.pop();
         if (p != null) {
@@ -124,7 +120,7 @@ public class Inventario {
         return null;
     }
 
-    // Getters de estructuras (para visualización)
+    
     public ArbolAVL getAvl() { return avl; }
     public TablaHash getHash() { return hash; }
     public ArbolB getArbolB() { return arbolB; }

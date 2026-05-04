@@ -17,9 +17,7 @@ public class PanelMedicionRendimiento {
         this.output = output;
     }
 
-    /**
-     * Abre un diálogo donde el usuario elige el tipo de medición.
-     */
+ 
     public void mostrarDialogoMedicion() {
         String[] opciones = {
             "Buscar por NOMBRE (Lista vs AVL)",
@@ -40,21 +38,21 @@ public class PanelMedicionRendimiento {
 
         if (elegido == null) return;
 
-        // Pedir el valor de búsqueda
+      
         String valor = JOptionPane.showInputDialog(null, "Ingrese el valor de búsqueda:");
         if (valor == null || valor.trim().isEmpty()) {
             output.setText("Medición cancelada.");
             return;
         }
 
-        // Obtener inventario activo
+        
         Inventario inv = controlador.getInventarioActivo();
         if (inv == null) {
             output.setText("Error: No hay sucursal activa.");
             return;
         }
 
-        // Ejecutar medición según tipo
+       
         String tipo = "";
         switch (elegido) {
             case "Buscar por NOMBRE (Lista vs AVL)":
@@ -80,7 +78,7 @@ public class PanelMedicionRendimiento {
                 break;
         }
 
-        // Mostrar resultado
+       
         String resumen = medicion.obtenerResumen(tipo);
         JTextArea textArea = new JTextArea(resumen);
         textArea.setEditable(false);

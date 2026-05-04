@@ -5,12 +5,11 @@ import fase2edd.model.Producto;
 
 public class ServicioMedicion {
 
-    // Guarda resultados de la última comparación
     private double tiempoListaSecuencial;
     private double tiempoAVL;
     private double tiempoHash;
 
-    // Número de repeticiones para la medición
+    
     private int repeticiones;
 
     public ServicioMedicion() {
@@ -20,10 +19,7 @@ public class ServicioMedicion {
         this.repeticiones = 100;
     }
 
-    /**
-     * Compara la búsqueda por NOMBRE entre Lista enlazada (secuencial) y AVL.
-     * Ejecuta múltiples repeticiones y guarda el promedio.
-     */
+ 
     public void compararBusquedaPorNombre(Inventario inventario, String nombre) {
         long acumLista = 0;
         long acumAVL = 0;
@@ -51,9 +47,7 @@ public class ServicioMedicion {
         this.tiempoAVL = (double) acumAVL / repeticiones;               // nanosegundos promedio
     }
 
-    /**
-     * Compara la búsqueda por CÓDIGO DE BARRAS entre Lista enlazada (secuencial) y Tabla Hash.
-     */
+    
     public void compararBusquedaPorCodigo(Inventario inventario, String codigo) {
         long acumLista = 0;
         long acumHash = 0;
@@ -81,15 +75,12 @@ public class ServicioMedicion {
         this.tiempoHash = (double) acumHash / repeticiones;
     }
 
-    /**
-     * Compara la búsqueda por CATEGORÍA entre Lista enlazada (secuencial) y Árbol B+.
-     */
     public void compararBusquedaPorCategoria(Inventario inventario, String categoria) {
         long acumLista = 0;
         long acumBPlus = 0;
 
         for (int i = 0; i < repeticiones; i++) {
-            // Secuencial
+            
             long iniLista = System.nanoTime();
             Producto[] todos = inventario.getLista().listar();
             for (int j = 0; j < todos.length; j++) {
@@ -111,9 +102,6 @@ public class ServicioMedicion {
         this.tiempoAVL = (double) acumBPlus / repeticiones; // reutilizamos campo AVL para B+
     }
 
-    /**
-     * Compara la búsqueda por RANGO DE FECHAS entre Lista enlazada y Árbol B.
-     */
     public void compararBusquedaPorRangoFechas(Inventario inventario, String inicio, String fin) {
         long acumLista = 0;
         long acumB = 0;
@@ -149,9 +137,6 @@ public class ServicioMedicion {
     public int getRepeticiones() { return repeticiones; }
     public void setRepeticiones(int rep) { this.repeticiones = rep; }
 
-    /**
-     * Devuelve un resumen formateado de la última comparación.
-     */
     public String obtenerResumen(String tipo) {
         StringBuilder sb = new StringBuilder();
         sb.append("=== MEDICIÓN DE RENDIMIENTO ===\n");

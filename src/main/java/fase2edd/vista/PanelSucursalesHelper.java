@@ -37,14 +37,14 @@ public class PanelSucursalesHelper {
         this.tblSucursales = tblSucursales;
         this.output = output;
 
-        // Configurar tabla
+       
         String[] columnas = {"ID", "Nombre", "Ubicación", "T. Ingreso", "T. Traspaso", "T. Despacho"};
         DefaultTableModel modelo = new DefaultTableModel(columnas, 0);
         tblSucursales.setModel(modelo);
         tblSucursales.getSelectionModel().addListSelectionListener(e -> cargarDatosEnFormulario());
     }
 
-    // Cargar la tabla con los datos del controlador
+    
     public void actualizarTabla() {
         DefaultTableModel modelo = (DefaultTableModel) tblSucursales.getModel();
         modelo.setRowCount(0);
@@ -61,7 +61,7 @@ public class PanelSucursalesHelper {
         }
     }
 
-    // Al seleccionar una fila de la tabla, cargar datos en el formulario
+
     private void cargarDatosEnFormulario() {
         int fila = tblSucursales.getSelectedRow();
         if (fila == -1) return;
@@ -74,7 +74,7 @@ public class PanelSucursalesHelper {
         txtTiempoDespacho.setText(modelo.getValueAt(fila, 5).toString());
     }
 
-    // Validar campos del formulario
+    
     private boolean validarCampos() {
         if (txtIdSucursal.getText().trim().isEmpty() ||
             txtNombreSucursal.getText().trim().isEmpty() ||
@@ -101,7 +101,7 @@ public class PanelSucursalesHelper {
         return true;
     }
 
-    // Limpiar formulario
+    
     private void limpiarFormulario() {
         txtIdSucursal.setText("");
         txtNombreSucursal.setText("");
@@ -112,7 +112,7 @@ public class PanelSucursalesHelper {
         tblSucursales.clearSelection();
     }
 
-    // ========== ACCIONES DE BOTONES ==========
+  
 
     public void crearSucursal() {
         if (!validarCampos()) return;

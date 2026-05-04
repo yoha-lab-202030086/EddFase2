@@ -14,7 +14,7 @@ public class Cola {
         tamanio = 0;
     }
 
-    // Encola un producto (al final)
+    
     public void encolar(Producto p) {
         NodoCola nuevo = new NodoCola(p);
         if (fin == null) {
@@ -27,7 +27,7 @@ public class Cola {
         tamanio++;
     }
 
-    // Devuelve un arreglo con todos los productos de la cola sin desencolarlos
+   
     public Producto[] verTodos() {
         Producto[] arr = new Producto[tamanio];
         NodoCola actual = frente;
@@ -39,7 +39,7 @@ public class Cola {
         return arr;
     }
 
-    // Desencola y devuelve el producto del frente
+   
     public Producto desencolar() {
         if (frente == null) {
             return null;
@@ -53,7 +53,7 @@ public class Cola {
         return dato;
     }
 
-    // Consulta el frente sin desencolar
+    
     public Producto verFrente() {
         return (frente != null) ? frente.getDato() : null;
     }

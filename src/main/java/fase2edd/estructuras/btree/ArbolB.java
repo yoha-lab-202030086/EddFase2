@@ -5,10 +5,10 @@ import fase2edd.model.Producto;
 
 
 
-// Árbol B cuyas claves se ordenan por fecha de caducidad
+
 public class ArbolB {
     private NodoB raiz;
-    private int d;  // grado mínimo (cada nodo tiene de d a 2d claves)
+    private int d;  // grado mínimo 
 
     public ArbolB(int d) {
         this.d = d;
@@ -89,7 +89,7 @@ public class ArbolB {
         padre.setN(padre.getN() + 1);
     }
 
-    //  BÚSQUEDA POR RANGO DE FECHAS 
+ 
     public ListaEnlazada buscarPorRango(String fechaInicio, String fechaFin) {
         ListaEnlazada resultados = new ListaEnlazada();
         buscarRangoRec(raiz, fechaInicio, fechaFin, resultados);
@@ -119,7 +119,7 @@ public class ArbolB {
         }
     }
 
-    // ========== ELIMINACIÓN ==========
+ 
     public void eliminar(String fecha, String codigoBarra) {
         if (raiz == null) return;
         eliminarRec(raiz, fecha, codigoBarra);
@@ -285,7 +285,6 @@ public class ArbolB {
         return raiz == null;
     }
 
-    // Para visualización del árbol B (recorrido en orden)
     public Producto[] obtenerTodosInOrden() {
         ListaEnlazada lista = new ListaEnlazada();
         inOrdenRec(raiz, lista);

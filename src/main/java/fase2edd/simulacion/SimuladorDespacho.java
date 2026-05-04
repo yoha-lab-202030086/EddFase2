@@ -18,7 +18,7 @@ public class SimuladorDespacho {
     private Thread hiloSimulacion;
     private ControladorSucursales ctrlSucursales;
 
-    // Para notificar cambios a la GUI
+  
     private Runnable alActualizar;
 
     public SimuladorDespacho() {
@@ -27,7 +27,7 @@ public class SimuladorDespacho {
         ultimoMensaje = "";
     }
 
-    // Permite a la GUI registrar un callback para refrescar
+    
     public void setAlActualizar(Runnable callback) {
         this.alActualizar = callback;
     }
@@ -62,9 +62,7 @@ public class SimuladorDespacho {
         return productoActual;
     }
 
-    /**
-     * Prepara y lanza la transferencia en un hilo separado.
-     */
+    
     public void iniciarTransferencia(Producto p, int[] ruta, ControladorSucursales ctrl) {
         if (enEjecucion) {
             ultimoMensaje = "Ya hay una transferencia en curso.";
@@ -92,9 +90,7 @@ public class SimuladorDespacho {
         hiloSimulacion.start();
     }
 
-    /**
-     * Ejecuta todos los pasos automáticamente, respetando tiempos.
-     */
+    
     private void ejecutarSimulacion() {
         while (!finalizada && enEjecucion) {
             // Pequeña pausa entre pasos para que se vea en la GUI
@@ -116,9 +112,6 @@ public class SimuladorDespacho {
         notificarGUI();
     }
 
-    /**
-     * Procesa un paso respetando los tiempos de la sucursal actual.
-     */
     private boolean procesarUnPasoInterno() {
         if (finalizada || rutaActual == null) {
             ultimoMensaje = "No hay transferencia en curso.";
@@ -132,7 +125,7 @@ public class SimuladorDespacho {
             return false;
         }
 
-        // Caso: destino final
+       
         if (indiceActual == rutaActual.length - 1) {
             if (!actual.getColaIngreso().estaVacia()) {
                 // Simular tiempo de ingreso del destino
@@ -154,7 +147,7 @@ public class SimuladorDespacho {
             return false;
         }
 
-        // Movimiento 1: Ingreso → Preparación (con tiempo de ingreso)
+        // Movimiento 1: Ingreso, Preparación (con tiempo de ingreso)
         if (!actual.getColaIngreso().estaVacia()) {
             dormir((long) (actual.getTiempoIngreso() * 500));
             Producto p = actual.getColaIngreso().desencolar();
@@ -163,7 +156,7 @@ public class SimuladorDespacho {
             return true;
         }
 
-        // Movimiento 2: Preparación → Salida (con tiempo de traspaso)
+        // Movimiento 2: Preparación, Salida (con tiempo de traspaso)
         if (!actual.getColaTraspaso().estaVacia()) {
             dormir((long) (actual.getTiempoTraspaso() * 500));
             Producto p = actual.getColaTraspaso().desencolar();
@@ -172,7 +165,7 @@ public class SimuladorDespacho {
             return true;
         }
 
-        // Movimiento 3: Salida → Siguiente sucursal (con intervalo de despacho)
+        // Movimiento 3: Salida , Siguiente sucursal (con intervalo de despacho)
         if (!actual.getColaDespacho().estaVacia()) {
             dormir((long) (actual.getIntervaloDespacho() * 500));
             Producto p = actual.getColaDespacho().desencolar();
@@ -186,10 +179,7 @@ public class SimuladorDespacho {
         return false;
     }
 
-    /**
-     * Procesa manualmente un solo paso (para el botón paso a paso). Respeta
-     * tiempos igual que el automático.
-     */
+
     public boolean procesarUnPaso(ControladorSucursales ctrl) {
         this.ctrlSucursales = ctrl;
         boolean resultado = procesarUnPasoInterno();
@@ -207,9 +197,6 @@ public class SimuladorDespacho {
         }
     }
 
-    /**
-     * Detiene la simulación automática.
-     */
     public void detener() {
         enEjecucion = false;
         if (hiloSimulacion != null) {
@@ -219,9 +206,6 @@ public class SimuladorDespacho {
         notificarGUI();
     }
 
-    /**
-     * Prepara transferencia para modo manual (sin hilo).
-     */
     public void prepararTransferencia(Producto p, int[] ruta, ControladorSucursales ctrl) {
         this.rutaActual = ruta;
         this.indiceActual = 0;

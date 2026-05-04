@@ -3,7 +3,7 @@ package fase2edd.estructuras.hash;
 import fase2edd.model.Producto;
 
 
-// Nodo para la lista enlazada de cada cubeta
+
 public class NodoHash {
     private Producto dato;
     private NodoHash siguiente;

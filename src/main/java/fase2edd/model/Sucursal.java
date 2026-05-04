@@ -13,12 +13,12 @@ public class Sucursal {
     private double tiempoTraspaso;    // segundos para preparar envío
     private double intervaloDespacho; // segundos entre cada envío
 
-    // Colas de la sucursal
+    
     private Cola colaIngreso;
     private Cola colaTraspaso;
     private Cola colaDespacho;
 
-    // Inventario propio (contiene todas las estructuras)
+   
     private Inventario inventario;
 
     public Sucursal() {
@@ -42,7 +42,7 @@ public class Sucursal {
         this.inventario = new Inventario();
     }
 
-    // Getters y Setters
+  
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
 
