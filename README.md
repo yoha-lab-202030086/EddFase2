@@ -78,7 +78,7 @@ Fase2Edd/
 ### 4.2 Desde línea de comandos (Maven)
 ```bash
 # Compilar
-mvn clean package
+en el proyecto Fase2Edd click derecho y ejecutar Clean and build o limpiar y construir
 
 # Ejecutar (usar el JAR con dependencias)
 java -jar target/Fase2Edd-1.0-SNAPSHOT-jar-with-dependencies.jar
