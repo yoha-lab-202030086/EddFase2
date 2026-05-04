@@ -28,10 +28,10 @@ public class ControladorGlobal {
         }
         return inventarioCtrl.getInventario();
     }
-    
+
     public boolean prepararTransferencia(Producto p, int idOrigen, int idDestino, int criterio) {
-    return transferenciasCtrl.prepararTransferencia(p, idOrigen, idDestino, criterio);
-}
+        return transferenciasCtrl.prepararTransferencia(p, idOrigen, idDestino, criterio);
+    }
 
     public boolean modificarSucursal(int id, String nombre, String ubicacion,
             double tIngreso, double tTraspaso, double intervalo) {
@@ -114,10 +114,10 @@ public class ControladorGlobal {
     public boolean agregarConexion(Conexion c) {
         return sucursalesCtrl.agregarConexion(c);
     }
-//
-//    public int[] transferirProducto(Producto p, int idOrigen, int idDestino, int criterio) {
-//        return transferenciasCtrl.transferirProducto(p, idOrigen, idDestino, criterio);
-//    }
+    //
+    //    public int[] transferirProducto(Producto p, int idOrigen, int idDestino, int criterio) {
+    //        return transferenciasCtrl.transferirProducto(p, idOrigen, idDestino, criterio);
+    //    }
 
     public ControladorSucursales getCtrlSucursales() {
         return sucursalesCtrl;
@@ -125,5 +125,13 @@ public class ControladorGlobal {
 
     public ControladorTransferencias getCtrlTransferencias() {
         return transferenciasCtrl;
+    }
+
+    public boolean iniciarTransferenciaAutomatica(Producto p, int idOrigen, int idDestino, int criterio) {
+        return transferenciasCtrl.iniciarTransferenciaAutomatica(p, idOrigen, idDestino, criterio);
+    }
+
+    public void detenerSimulacion() {
+        transferenciasCtrl.detenerSimulacion();
     }
 }

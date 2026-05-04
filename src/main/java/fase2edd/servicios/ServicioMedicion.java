@@ -3,65 +3,165 @@ package fase2edd.servicios;
 import fase2edd.inventario.Inventario;
 import fase2edd.model.Producto;
 
-
-
 public class ServicioMedicion {
-    private double[] tiemposBusquedaNombre;
-    private double[] tiemposBusquedaCodigo;
-    private double[] tiemposBusquedaCategoria;
-    private double[] tiemposBusquedaRango;
-    private int cantidadMediciones;
+
+    // Guarda resultados de la última comparación
+    private double tiempoListaSecuencial;
+    private double tiempoAVL;
+    private double tiempoHash;
+
+    // Número de repeticiones para la medición
+    private int repeticiones;
 
     public ServicioMedicion() {
-        tiemposBusquedaNombre = new double[1000];
-        tiemposBusquedaCodigo = new double[1000];
-        tiemposBusquedaCategoria = new double[1000];
-        tiemposBusquedaRango = new double[1000];
-        cantidadMediciones = 0;
+        this.tiempoListaSecuencial = 0;
+        this.tiempoAVL = 0;
+        this.tiempoHash = 0;
+        this.repeticiones = 100;
     }
 
-    // Mide búsqueda por nombre en AVL y en Lista enlazada (secuencial)
-    public void medirBusquedaPorNombre(Inventario inventario, String nombre) {
-        long inicio = System.nanoTime();
-        Producto pAvl = inventario.getAvl().buscarPorNombre(nombre);
-        long finAvl = System.nanoTime();
+    /**
+     * Compara la búsqueda por NOMBRE entre Lista enlazada (secuencial) y AVL.
+     * Ejecuta múltiples repeticiones y guarda el promedio.
+     */
+    public void compararBusquedaPorNombre(Inventario inventario, String nombre) {
+        long acumLista = 0;
+        long acumAVL = 0;
 
-        long inicioLista = System.nanoTime();
-        Producto pLista = null;
-        Producto[] todos = inventario.getLista().listar();
-        for (int i = 0; i < todos.length; i++) {
-            if (todos[i].getNombre().equalsIgnoreCase(nombre)) {
-                pLista = todos[i];
-                break;
+        for (int i = 0; i < repeticiones; i++) {
+            // Búsqueda secuencial en lista enlazada
+            long iniLista = System.nanoTime();
+            Producto[] todos = inventario.getLista().listar();
+            for (int j = 0; j < todos.length; j++) {
+                if (todos[j].getNombre().equalsIgnoreCase(nombre)) {
+                    break;
+                }
             }
-        }
-        long finLista = System.nanoTime();
+            long finLista = System.nanoTime();
+            acumLista += (finLista - iniLista);
 
-        if (cantidadMediciones < tiemposBusquedaNombre.length) {
-            tiemposBusquedaNombre[cantidadMediciones] = (finAvl - inicio) / 1e6; // milisegundos
-            // también podemos guardar el de lista en otro arreglo
-            // Por simplicidad aquí solo registramos AVL pero se puede extender
+            // Búsqueda en AVL (por nombre)
+            long iniAVL = System.nanoTime();
+            inventario.getAvl().buscarPorNombre(nombre);
+            long finAVL = System.nanoTime();
+            acumAVL += (finAVL - iniAVL);
         }
-        cantidadMediciones++;
+
+        this.tiempoListaSecuencial = (double) acumLista / repeticiones; // nanosegundos promedio
+        this.tiempoAVL = (double) acumAVL / repeticiones;               // nanosegundos promedio
     }
 
-    // Similar para las otras búsquedas...
-    public double medirTiempoInsercion(Inventario inventario, Producto p) {
-        long inicio = System.nanoTime();
-        inventario.insertarProducto(p);
-        long fin = System.nanoTime();
-        return (fin - inicio) / 1e6;
+    /**
+     * Compara la búsqueda por CÓDIGO DE BARRAS entre Lista enlazada (secuencial) y Tabla Hash.
+     */
+    public void compararBusquedaPorCodigo(Inventario inventario, String codigo) {
+        long acumLista = 0;
+        long acumHash = 0;
+
+        for (int i = 0; i < repeticiones; i++) {
+            // Secuencial en lista
+            long iniLista = System.nanoTime();
+            Producto[] todos = inventario.getLista().listar();
+            for (int j = 0; j < todos.length; j++) {
+                if (todos[j].getCodigoBarra().equals(codigo)) {
+                    break;
+                }
+            }
+            long finLista = System.nanoTime();
+            acumLista += (finLista - iniLista);
+
+            // Hash
+            long iniHash = System.nanoTime();
+            inventario.getHash().buscar(codigo);
+            long finHash = System.nanoTime();
+            acumHash += (finHash - iniHash);
+        }
+
+        this.tiempoListaSecuencial = (double) acumLista / repeticiones;
+        this.tiempoHash = (double) acumHash / repeticiones;
     }
 
-    // Método genérico para reportar últimas mediciones
-    public String obtenerResumen() {
+    /**
+     * Compara la búsqueda por CATEGORÍA entre Lista enlazada (secuencial) y Árbol B+.
+     */
+    public void compararBusquedaPorCategoria(Inventario inventario, String categoria) {
+        long acumLista = 0;
+        long acumBPlus = 0;
+
+        for (int i = 0; i < repeticiones; i++) {
+            // Secuencial
+            long iniLista = System.nanoTime();
+            Producto[] todos = inventario.getLista().listar();
+            for (int j = 0; j < todos.length; j++) {
+                if (todos[j].getCategoria().equalsIgnoreCase(categoria)) {
+                    // encontrado, seguimos contando
+                }
+            }
+            long finLista = System.nanoTime();
+            acumLista += (finLista - iniLista);
+
+            // B+
+            long iniBPlus = System.nanoTime();
+            inventario.getArbolBPlus().buscarPorCategoria(categoria);
+            long finBPlus = System.nanoTime();
+            acumBPlus += (finBPlus - iniBPlus);
+        }
+
+        this.tiempoListaSecuencial = (double) acumLista / repeticiones;
+        this.tiempoAVL = (double) acumBPlus / repeticiones; // reutilizamos campo AVL para B+
+    }
+
+    /**
+     * Compara la búsqueda por RANGO DE FECHAS entre Lista enlazada y Árbol B.
+     */
+    public void compararBusquedaPorRangoFechas(Inventario inventario, String inicio, String fin) {
+        long acumLista = 0;
+        long acumB = 0;
+
+        for (int i = 0; i < repeticiones; i++) {
+            // Secuencial
+            long iniLista = System.nanoTime();
+            Producto[] todos = inventario.getLista().listar();
+            for (int j = 0; j < todos.length; j++) {
+                String fecha = todos[j].getFechaCaducidad();
+                if (fecha.compareTo(inicio) >= 0 && fecha.compareTo(fin) <= 0) {
+                    // dentro del rango
+                }
+            }
+            long finLista = System.nanoTime();
+            acumLista += (finLista - iniLista);
+
+            // Árbol B
+            long iniB = System.nanoTime();
+            inventario.getArbolB().buscarPorRango(inicio, fin);
+            long finB = System.nanoTime();
+            acumB += (finB - iniB);
+        }
+
+        this.tiempoListaSecuencial = (double) acumLista / repeticiones;
+        this.tiempoHash = (double) acumB / repeticiones; // reutilizamos campo Hash para B
+    }
+
+    // Getters
+    public double getTiempoListaSecuencial() { return tiempoListaSecuencial; }
+    public double getTiempoAVL() { return tiempoAVL; }
+    public double getTiempoHash() { return tiempoHash; }
+    public int getRepeticiones() { return repeticiones; }
+    public void setRepeticiones(int rep) { this.repeticiones = rep; }
+
+    /**
+     * Devuelve un resumen formateado de la última comparación.
+     */
+    public String obtenerResumen(String tipo) {
         StringBuilder sb = new StringBuilder();
-        sb.append("Mediciones realizadas: ").append(cantidadMediciones).append("\n");
-        if (cantidadMediciones > 0) {
-            double suma = 0;
-            for (int i = 0; i < cantidadMediciones; i++) suma += tiemposBusquedaNombre[i];
-            sb.append("Tiempo promedio búsqueda por nombre (AVL): ").append(suma / cantidadMediciones).append(" ms");
-        }
+        sb.append("=== MEDICIÓN DE RENDIMIENTO ===\n");
+        sb.append("Tipo de búsqueda: ").append(tipo).append("\n");
+        sb.append("Repeticiones: ").append(repeticiones).append("\n");
+        sb.append("--------------------------------\n");
+        sb.append(String.format("Lista enlazada (secuencial): %.2f ns\n", tiempoListaSecuencial));
+        if (tiempoAVL > 0) sb.append(String.format("AVL / B+:              %.2f ns\n", tiempoAVL));
+        if (tiempoHash > 0) sb.append(String.format("Hash / B:              %.2f ns\n", tiempoHash));
+        sb.append("================================\n");
         return sb.toString();
     }
 }

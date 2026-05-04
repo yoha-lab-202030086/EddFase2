@@ -22,10 +22,13 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     private PanelRedSucursalesHelper panelRedHelper;
     JLabel lblRutaResultado;
     private PanelTransferenciasHelper panelTransferenciasHelper;
+    private PanelMedicionRendimiento panelMedicion;
 
     public VentanaPrincipal() {
         initComponents();
+       
         controlador = new ControladorGlobal();
+         panelMedicion = new PanelMedicionRendimiento(controlador, output);
         jTabbedPane3.addChangeListener(e -> {
             if (jTabbedPane3.getSelectedIndex() == 2) { // índice de Red de Sucursales
                 panelRedHelper.actualizarCombos();
@@ -242,6 +245,8 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         rbnTransferenciaCosto = new javax.swing.JRadioButton();
         btnIniciarTransferencia = new javax.swing.JButton();
         btnProcesarPaso = new javax.swing.JButton();
+        btnIniciarAutomatica = new javax.swing.JButton();
+        btnDetener = new javax.swing.JButton();
         jPanel6 = new javax.swing.JPanel();
         jLabel33 = new javax.swing.JLabel();
         jLabel34 = new javax.swing.JLabel();
@@ -267,10 +272,6 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         csvConexiones = new javax.swing.JMenuItem();
         csvProducto = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
-        avl = new javax.swing.JMenuItem();
-        btree = new javax.swing.JMenuItem();
-        btreeplus = new javax.swing.JMenuItem();
-        hash = new javax.swing.JMenuItem();
         grafo = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -1018,39 +1019,49 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         btnProcesarPaso.setText("Procesar Siguiente Paso");
         btnProcesarPaso.addActionListener(this::btnProcesarPasoActionPerformed);
 
+        btnIniciarAutomatica.setText("Iniciar Automatica");
+        btnIniciarAutomatica.addActionListener(this::btnIniciarAutomaticaActionPerformed);
+
+        btnDetener.setText("Detener");
+        btnDetener.addActionListener(this::btnDetenerActionPerformed);
+
         javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
         jPanel5.setLayout(jPanel5Layout);
         jPanel5Layout.setHorizontalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel5Layout.createSequentialGroup()
                 .addGap(79, 79, 79)
-                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jLabel32, javax.swing.GroupLayout.PREFERRED_SIZE, 116, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel26, javax.swing.GroupLayout.PREFERRED_SIZE, 116, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel32, javax.swing.GroupLayout.PREFERRED_SIZE, 116, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(rbnTransferenciaTiempo)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(rbnTransferenciaCosto)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(jPanel5Layout.createSequentialGroup()
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel5Layout.createSequentialGroup()
-                        .addComponent(rbnTransferenciaTiempo)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(rbnTransferenciaCosto)
-                        .addGap(189, 189, 189))
-                    .addGroup(jPanel5Layout.createSequentialGroup()
-                        .addComponent(cmbProductoTransferencia, javax.swing.GroupLayout.PREFERRED_SIZE, 194, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(72, 72, 72)
+                        .addContainerGap()
+                        .addComponent(jLabel26, javax.swing.GroupLayout.PREFERRED_SIZE, 116, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(cmbProductoTransferencia, javax.swing.GroupLayout.PREFERRED_SIZE, 273, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(32, 32, 32)
                         .addComponent(jLabel30)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(cmbSucursalOrigenTransferencia, javax.swing.GroupLayout.PREFERRED_SIZE, 206, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 16, Short.MAX_VALUE)))
-                .addComponent(jLabel31, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(cmbSucursalDestinoTransferencia, javax.swing.GroupLayout.PREFERRED_SIZE, 197, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(47, Short.MAX_VALUE))
-            .addGroup(jPanel5Layout.createSequentialGroup()
-                .addGap(95, 95, 95)
-                .addComponent(btnIniciarTransferencia, javax.swing.GroupLayout.PREFERRED_SIZE, 199, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(btnProcesarPaso, javax.swing.GroupLayout.PREFERRED_SIZE, 239, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(414, 414, 414))
+                        .addGap(18, 18, 18)
+                        .addComponent(cmbSucursalOrigenTransferencia, javax.swing.GroupLayout.PREFERRED_SIZE, 218, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(jLabel31)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(cmbSucursalDestinoTransferencia, javax.swing.GroupLayout.PREFERRED_SIZE, 210, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel5Layout.createSequentialGroup()
+                        .addGap(95, 95, 95)
+                        .addComponent(btnIniciarTransferencia, javax.swing.GroupLayout.PREFERRED_SIZE, 199, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(btnProcesarPaso, javax.swing.GroupLayout.PREFERRED_SIZE, 239, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(162, 162, 162)
+                        .addComponent(btnIniciarAutomatica, javax.swing.GroupLayout.PREFERRED_SIZE, 161, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(48, 48, 48)
+                        .addComponent(btnDetener)))
+                .addContainerGap(64, Short.MAX_VALUE))
         );
         jPanel5Layout.setVerticalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1071,7 +1082,9 @@ public class VentanaPrincipal extends javax.swing.JFrame {
                 .addGap(62, 62, 62)
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnIniciarTransferencia)
-                    .addComponent(btnProcesarPaso))
+                    .addComponent(btnProcesarPaso)
+                    .addComponent(btnIniciarAutomatica)
+                    .addComponent(btnDetener))
                 .addContainerGap(70, Short.MAX_VALUE))
         );
 
@@ -1155,20 +1168,18 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         jPanel7Layout.setHorizontalGroup(
             jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel7Layout.createSequentialGroup()
-                .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel7Layout.createSequentialGroup()
-                        .addGap(30, 30, 30)
-                        .addComponent(jLabel36)
-                        .addGap(35, 35, 35)
-                        .addComponent(lblETA, javax.swing.GroupLayout.PREFERRED_SIZE, 316, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jLabel38)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(lblUltimoEvento, javax.swing.GroupLayout.PREFERRED_SIZE, 458, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel7Layout.createSequentialGroup()
-                        .addGap(217, 217, 217)
-                        .addComponent(lblEstadoProducto, javax.swing.GroupLayout.PREFERRED_SIZE, 758, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(45, Short.MAX_VALUE))
+                .addGap(217, 217, 217)
+                .addComponent(lblEstadoProducto, javax.swing.GroupLayout.PREFERRED_SIZE, 142, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(140, 140, 140)
+                .addComponent(jLabel36)
+                .addGap(18, 18, 18)
+                .addComponent(lblETA, javax.swing.GroupLayout.DEFAULT_SIZE, 516, Short.MAX_VALUE)
+                .addContainerGap())
+            .addGroup(jPanel7Layout.createSequentialGroup()
+                .addGap(32, 32, 32)
+                .addComponent(jLabel38)
+                .addGap(18, 18, 18)
+                .addComponent(lblUltimoEvento, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(jPanel7Layout.createSequentialGroup()
                     .addGap(29, 29, 29)
@@ -1178,13 +1189,14 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         jPanel7Layout.setVerticalGroup(
             jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel7Layout.createSequentialGroup()
-                .addGap(40, 40, 40)
-                .addComponent(lblEstadoProducto)
+                .addGap(38, 38, 38)
+                .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblEstadoProducto)
+                    .addComponent(jLabel36)
+                    .addComponent(lblETA))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 73, Short.MAX_VALUE)
                 .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel36)
                     .addComponent(jLabel38)
-                    .addComponent(lblETA)
                     .addComponent(lblUltimoEvento))
                 .addGap(38, 38, 38))
             .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1238,22 +1250,10 @@ public class VentanaPrincipal extends javax.swing.JFrame {
 
         jMenuBar1.add(jMenu1);
 
-        jMenu2.setText("Visualizacion");
+        jMenu2.setText("Medicion");
 
-        avl.setText("AVL");
-        jMenu2.add(avl);
-
-        btree.setText("Árbol B");
-        btree.addActionListener(this::btreeActionPerformed);
-        jMenu2.add(btree);
-
-        btreeplus.setText("Árbol B+");
-        jMenu2.add(btreeplus);
-
-        hash.setText("Hash");
-        jMenu2.add(hash);
-
-        grafo.setText("Grafo");
+        grafo.setText("Medicion");
+        grafo.addActionListener(this::grafoActionPerformed);
         jMenu2.add(grafo);
 
         jMenuBar1.add(jMenu2);
@@ -1312,10 +1312,6 @@ public class VentanaPrincipal extends javax.swing.JFrame {
             }
         }
     }//GEN-LAST:event_csvSucursalActionPerformed
-
-    private void btreeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btreeActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_btreeActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
@@ -1645,6 +1641,19 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         panelTransferenciasHelper.procesarSiguientePaso();
     }//GEN-LAST:event_btnProcesarPasoActionPerformed
 
+    private void btnIniciarAutomaticaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnIniciarAutomaticaActionPerformed
+       panelTransferenciasHelper.iniciarTransferenciaAutomatica();
+    }//GEN-LAST:event_btnIniciarAutomaticaActionPerformed
+
+    private void btnDetenerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDetenerActionPerformed
+       panelTransferenciasHelper.detenerSimulacion();
+    }//GEN-LAST:event_btnDetenerActionPerformed
+
+    private void grafoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_grafoActionPerformed
+        panelMedicion.mostrarDialogoMedicion();
+
+    }//GEN-LAST:event_grafoActionPerformed
+
     private void agregarProductoATabla(javax.swing.table.DefaultTableModel modelo, Producto p) {
         modelo.addRow(new Object[]{
             p.getNombre(), p.getCodigoBarra(), p.getCategoria(),
@@ -1654,18 +1663,17 @@ public class VentanaPrincipal extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton agregar;
-    private javax.swing.JMenuItem avl;
     private javax.swing.JButton btnActualizarTabla;
     private javax.swing.JButton btnAgregarConexion;
     private javax.swing.JButton btnCalcularRuta;
     private javax.swing.JButton btnCrearSucursal;
+    private javax.swing.JButton btnDetener;
     private javax.swing.JButton btnEliminarSucursal;
+    private javax.swing.JButton btnIniciarAutomatica;
     private javax.swing.JButton btnIniciarTransferencia;
     private javax.swing.JButton btnLimpiarSucursal;
     private javax.swing.JButton btnModificarSucursal;
     private javax.swing.JButton btnProcesarPaso;
-    private javax.swing.JMenuItem btree;
-    private javax.swing.JMenuItem btreeplus;
     private javax.swing.JButton buscar;
     private javax.swing.JPanel busqueda;
     private javax.swing.ButtonGroup buttonGroup1;
@@ -1686,7 +1694,6 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     private javax.swing.JButton deshacer;
     private javax.swing.JButton elimiarSelect;
     private javax.swing.JMenuItem grafo;
-    private javax.swing.JMenuItem hash;
     private javax.swing.JTextField hasta;
     private javax.swing.JTextField icateg;
     private javax.swing.JTextField icodigo;

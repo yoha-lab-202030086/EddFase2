@@ -19,6 +19,8 @@ import guru.nidi.graphviz.engine.Format;
 import guru.nidi.graphviz.engine.Graphviz;
 import guru.nidi.graphviz.model.MutableGraph;
 import guru.nidi.graphviz.parse.Parser;
+import java.io.File;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 public class VisualizadorGraphviz {
 
@@ -181,19 +183,86 @@ public class VisualizadorGraphviz {
 
     private static void mostrarGrafico(String dot, String titulo, Component parent) {
         try {
+            // Corregido: Instanciamos el Parser para evitar el error de contexto estático
             MutableGraph g = new Parser().read(dot);
-            BufferedImage bufImg = Graphviz.fromGraph(g).width(800).render(Format.PNG).toImage();
+
+            // Corregido: Usamos .toImage() directamente, sin limitar el ancho, para obtener la máxima calidad y detalle
+            BufferedImage bufImg = Graphviz.fromGraph(g)
+                    .render(Format.PNG)
+                    .toImage();
 
             ImageIcon icon = new ImageIcon(bufImg);
             JLabel label = new JLabel(icon);
-            JScrollPane scroll = new JScrollPane(label);
-            JDialog dialog = new JDialog(SwingUtilities.windowForComponent(parent), titulo, Dialog.ModalityType.APPLICATION_MODAL);
-            dialog.add(scroll);
-            dialog.setSize(900, 600);
+
+            // Asignamos el tamaño preferido real para que el JScrollPane active las barras de desplazamiento
+            label.setPreferredSize(new Dimension(bufImg.getWidth(), bufImg.getHeight()));
+
+            JScrollPane scroll = new JScrollPane(label,
+                    JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+                    JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+
+            // Configuramos la velocidad del scroll
+            scroll.getVerticalScrollBar().setUnitIncrement(16);
+            scroll.getHorizontalScrollBar().setUnitIncrement(16);
+            scroll.setBorder(BorderFactory.createEmptyBorder());
+
+            // Botón de exportar
+            JButton btnExportar = new JButton("Guardar como PNG");
+            btnExportar.addActionListener(e -> exportarAGrafico(dot, titulo, parent));
+
+            JPanel panelInferior = new JPanel();
+            panelInferior.add(btnExportar);
+
+            JPanel panelPrincipal = new JPanel(new java.awt.BorderLayout());
+            panelPrincipal.add(scroll, java.awt.BorderLayout.CENTER);
+            panelPrincipal.add(panelInferior, java.awt.BorderLayout.SOUTH);
+
+            JDialog dialog = new JDialog(SwingUtilities.windowForComponent(parent), titulo,
+                    Dialog.ModalityType.APPLICATION_MODAL);
+            dialog.add(panelPrincipal);
+            dialog.setSize(900, 650);
             dialog.setLocationRelativeTo(parent);
             dialog.setVisible(true);
+
         } catch (Exception e) {
             JOptionPane.showMessageDialog(parent, "Error al generar gráfico: " + e.getMessage());
         }
     }
+
+    /**
+     * Guarda la imagen generada a partir de un string DOT en un archivo PNG.
+     */
+    public static void exportarAGrafico(String dot, String titulo, Component parent) {
+        JFileChooser fc = new JFileChooser();
+        fc.setDialogTitle("Guardar " + titulo + " como PNG");
+        fc.setFileFilter(new FileNameExtensionFilter("Imagen PNG", "png"));
+        fc.setSelectedFile(new File(titulo.replace(" ", "_") + ".png"));
+
+        int resultado = fc.showSaveDialog(parent);
+        if (resultado != JFileChooser.APPROVE_OPTION) {
+            return;
+        }
+
+        File archivo = fc.getSelectedFile();
+        if (!archivo.getName().endsWith(".png")) {
+            archivo = new File(archivo.getAbsolutePath() + ".png");
+        }
+
+        try {
+            // Corregimos: Instanciamos el Parser para evitar el error de contexto estático
+            MutableGraph g = new Parser().read(dot);
+
+            // Corregimos: Renderizamos y guardamos directamente al archivo
+            Graphviz.fromGraph(g).width(800).render(Format.PNG).toFile(archivo);
+
+            JOptionPane.showMessageDialog(parent,
+                    "Imagen guardada exitosamente:\n" + archivo.getAbsolutePath(),
+                    "Exportar exitoso", JOptionPane.INFORMATION_MESSAGE);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(parent,
+                    "Error al exportar: " + e.getMessage(),
+                    "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
 }

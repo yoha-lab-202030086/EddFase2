@@ -16,46 +16,42 @@ public class ControladorTransferencias {
         this.simulador = new SimuladorDespacho();
     }
 
-    // Transfiere un producto desde origen a destino usando el criterio (0 = tiempo, 1 = costo)
-    // Devuelve la ruta como arreglo de ids de sucursales o null si no es posible
-//    public int[] transferirProducto(Producto p, int idOrigen, int idDestino, int criterio) {
-//        Sucursal origen = ctrlSucursales.buscarPorId(idOrigen);
-//        Sucursal destino = ctrlSucursales.buscarPorId(idDestino);
-//        if (origen == null || destino == null) return null;
-//
-//        Grafo grafo = ctrlSucursales.getGrafo();
-//        int[] ruta = grafo.rutaMasCorta(idOrigen, idDestino, criterio);
-//        if (ruta == null || ruta.length == 0) return null;
-//
-//        // Cambiar estado del producto
-//        p.setEstado(EstadoProducto.EN_TRANSITO);
-//
-//        // Colocar en la cola de ingreso de la primera sucursal
-//        origen.getColaIngreso().encolar(p);
-//
-//        // Iniciar simulación de despacho a través de la ruta
-//        simulador.simularRuta(ruta, ctrlSucursales, p);
-//
-//        return ruta;
-//    }
-    public boolean prepararTransferencia(Producto p, int idOrigen, int idDestino, int criterio) {
-        Grafo grafo = ctrlSucursales.getGrafo();
-        int[] ruta = grafo.rutaMasCorta(idOrigen, idDestino, criterio);
-        if (ruta == null || ruta.length == 0) {
-            return false;
-        }
+    // Inicia transferencia automática con hilo
+public boolean iniciarTransferenciaAutomatica(Producto p, int idOrigen, int idDestino, int criterio) {
+    Grafo grafo = ctrlSucursales.getGrafo();
+    int[] ruta = grafo.rutaMasCorta(idOrigen, idDestino, criterio);
+    if (ruta == null || ruta.length == 0) return false;
+    p.setEstado(EstadoProducto.EN_TRANSITO);
+    simulador.iniciarTransferencia(p, ruta, ctrlSucursales);
+    return true;
+}
 
-        p.setEstado(EstadoProducto.EN_TRANSITO);
-        simulador.prepararTransferencia(p, ruta, ctrlSucursales);
-        return true;
+// Prepara transferencia manual (sin hilo)
+public boolean prepararTransferencia(Producto p, int idOrigen, int idDestino, int criterio) {
+    Grafo grafo = ctrlSucursales.getGrafo();
+    int[] ruta = grafo.rutaMasCorta(idOrigen, idDestino, criterio);
+    if (ruta == null || ruta.length == 0) return false;
+    p.setEstado(EstadoProducto.EN_TRANSITO);
+    // Colocar directamente en ingreso del origen
+    Sucursal origen = ctrlSucursales.buscarPorId(ruta[0]);
+    if (origen != null) {
+        origen.getColaIngreso().encolar(p);
     }
+    // Configurar simulador para modo manual
+    simulador.prepararTransferencia(p, ruta, ctrlSucursales);
+    return true;
+}
 
-    public boolean procesarSiguientePaso() {
-        return simulador.procesarUnPaso(ctrlSucursales);
-    }
+   public boolean procesarSiguientePaso() {
+    return simulador.procesarUnPaso(ctrlSucursales);
+}
 
-    public SimuladorDespacho getSimulador() {
-        return simulador;
-    }
+public void detenerSimulacion() {
+    simulador.detener();
+}
+
+public SimuladorDespacho getSimulador() {
+    return simulador;
+}
 
 }

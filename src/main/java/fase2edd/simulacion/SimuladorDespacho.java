@@ -5,97 +5,45 @@ import fase2edd.model.Producto;
 import fase2edd.model.Sucursal;
 import fase2edd.model.Producto;
 import fase2edd.model.Sucursal;
-
+import javax.swing.SwingUtilities;
 
 public class SimuladorDespacho {
-    // Estado de la simulación actual
+
     private int[] rutaActual;
-    private int indiceActual;      // índice en la ruta (sucursal actual)
+    private int indiceActual;
     private Producto productoActual;
     private String ultimoMensaje;
     private boolean finalizada;
+    private boolean enEjecucion;
+    private Thread hiloSimulacion;
+    private ControladorSucursales ctrlSucursales;
+
+    // Para notificar cambios a la GUI
+    private Runnable alActualizar;
 
     public SimuladorDespacho() {
         finalizada = true;
+        enEjecucion = false;
         ultimoMensaje = "";
     }
 
-    /**
-     * Prepara una nueva transferencia paso a paso.
-     * Coloca el producto en la cola de ingreso de la primera sucursal.
-     */
-    public void prepararTransferencia(Producto p, int[] ruta, ControladorSucursales ctrl) {
-        this.rutaActual = ruta;
-        this.indiceActual = 0;
-        this.productoActual = p;
-        this.finalizada = false;
+    // Permite a la GUI registrar un callback para refrescar
+    public void setAlActualizar(Runnable callback) {
+        this.alActualizar = callback;
+    }
 
-        // Colocar en cola de ingreso de la primera sucursal
-        Sucursal origen = ctrl.buscarPorId(ruta[0]);
-        if (origen != null) {
-            origen.getColaIngreso().encolar(p);
-            productoActual.setEstado(EstadoProducto.EN_TRANSITO);
-            ultimoMensaje = "Producto " + p.getNombre() + " encolado en ingreso de " + origen.getNombre();
+    private void notificarGUI() {
+        if (alActualizar != null) {
+            SwingUtilities.invokeLater(alActualizar);
         }
     }
 
-    /**
-     * Procesa un solo paso de la simulación.
-     * @param ctrl Controlador de sucursales para obtener los objetos Sucursal.
-     * @return true si la simulación continúa, false si ya terminó.
-     */
-    public boolean procesarUnPaso(ControladorSucursales ctrl) {
-        if (finalizada || rutaActual == null) {
-            ultimoMensaje = "No hay transferencia en curso.";
-            return false;
-        }
+    public int[] getRuta() {
+        return rutaActual;
+    }
 
-        Sucursal actual = ctrl.buscarPorId(rutaActual[indiceActual]);
-
-        // Caso 1: Estamos en la última sucursal (destino final)
-        if (indiceActual == rutaActual.length - 1) {
-            // Sacar de cola de ingreso (si está allí) y finalizar
-            if (!actual.getColaIngreso().estaVacia()) {
-                Producto p = actual.getColaIngreso().desencolar();
-                p.setEstado(EstadoProducto.DISPONIBLE);
-                actual.getInventario().insertarProducto(p);
-                ultimoMensaje = "Producto " + p.getNombre() + " recibido en destino final " + actual.getNombre();
-            }
-            finalizada = true;
-            return false;
-        }
-
-        // Sucursal intermedia
-        Sucursal siguiente = ctrl.buscarPorId(rutaActual[indiceActual + 1]);
-
-        // 1. Si hay producto en ingreso, moverlo a preparación de traspaso
-        if (!actual.getColaIngreso().estaVacia()) {
-            Producto p = actual.getColaIngreso().desencolar();
-            actual.getColaTraspaso().encolar(p);
-            ultimoMensaje = "Producto " + p.getNombre() + " pasa a preparación en " + actual.getNombre();
-            return true;
-        }
-
-        // 2. Si hay producto en preparación, moverlo a salida
-        if (!actual.getColaTraspaso().estaVacia()) {
-            Producto p = actual.getColaTraspaso().desencolar();
-            actual.getColaDespacho().encolar(p);
-            ultimoMensaje = "Producto " + p.getNombre() + " pasa a cola de salida en " + actual.getNombre();
-            return true;
-        }
-
-        // 3. Si hay producto en salida, enviarlo a la siguiente sucursal (ingreso)
-        if (!actual.getColaDespacho().estaVacia()) {
-            Producto p = actual.getColaDespacho().desencolar();
-            siguiente.getColaIngreso().encolar(p);
-            indiceActual++; // avanzamos a la siguiente sucursal
-            ultimoMensaje = "Producto " + p.getNombre() + " enviado de " + actual.getNombre() + " a " + siguiente.getNombre();
-            return true;
-        }
-
-        // Si no hay nada en ninguna cola, la transferencia se estancó
-        ultimoMensaje = "Sin productos en colas de " + actual.getNombre();
-        return false;
+    public int getIndiceActual() {
+        return indiceActual;
     }
 
     public String getUltimoMensaje() {
@@ -106,11 +54,182 @@ public class SimuladorDespacho {
         return finalizada;
     }
 
+    public boolean isEnEjecucion() {
+        return enEjecucion;
+    }
+
     public Producto getProductoActual() {
         return productoActual;
     }
-    
-    public int[] getRuta() {
-    return rutaActual;
-}
+
+    /**
+     * Prepara y lanza la transferencia en un hilo separado.
+     */
+    public void iniciarTransferencia(Producto p, int[] ruta, ControladorSucursales ctrl) {
+        if (enEjecucion) {
+            ultimoMensaje = "Ya hay una transferencia en curso.";
+            return;
+        }
+        this.rutaActual = ruta;
+        this.indiceActual = 0;
+        this.productoActual = p;
+        this.finalizada = false;
+        this.enEjecucion = true;
+        this.ctrlSucursales = ctrl;
+
+        // Colocar en cola de ingreso de la primera sucursal
+        Sucursal origen = ctrl.buscarPorId(ruta[0]);
+        if (origen != null) {
+            origen.getColaIngreso().encolar(p);
+            productoActual.setEstado(EstadoProducto.EN_TRANSITO);
+            ultimoMensaje = "Producto " + p.getNombre() + " encolado en ingreso de " + origen.getNombre();
+        }
+
+        notificarGUI();
+
+        // Lanzar hilo que procesará los pasos automáticamente
+        hiloSimulacion = new Thread(() -> ejecutarSimulacion());
+        hiloSimulacion.start();
+    }
+
+    /**
+     * Ejecuta todos los pasos automáticamente, respetando tiempos.
+     */
+    private void ejecutarSimulacion() {
+        while (!finalizada && enEjecucion) {
+            // Pequeña pausa entre pasos para que se vea en la GUI
+            try {
+                Thread.sleep(500); // medio segundo entre pasos
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                break;
+            }
+
+            boolean continuar = procesarUnPasoInterno();
+            notificarGUI();
+
+            if (!continuar) {
+                break;
+            }
+        }
+        enEjecucion = false;
+        notificarGUI();
+    }
+
+    /**
+     * Procesa un paso respetando los tiempos de la sucursal actual.
+     */
+    private boolean procesarUnPasoInterno() {
+        if (finalizada || rutaActual == null) {
+            ultimoMensaje = "No hay transferencia en curso.";
+            return false;
+        }
+
+        Sucursal actual = ctrlSucursales.buscarPorId(rutaActual[indiceActual]);
+        if (actual == null) {
+            ultimoMensaje = "Error: sucursal no encontrada.";
+            finalizada = true;
+            return false;
+        }
+
+        // Caso: destino final
+        if (indiceActual == rutaActual.length - 1) {
+            if (!actual.getColaIngreso().estaVacia()) {
+                // Simular tiempo de ingreso del destino
+                dormir((long) (actual.getTiempoIngreso() * 1000));
+                Producto p = actual.getColaIngreso().desencolar();
+                p.setEstado(EstadoProducto.DISPONIBLE);
+                actual.getInventario().insertarProducto(p);
+                ultimoMensaje = "Producto " + p.getNombre() + " recibido en destino final " + actual.getNombre();
+            }
+            finalizada = true;
+            productoActual.setEstado(EstadoProducto.DISPONIBLE);
+            return false;
+        }
+
+        Sucursal siguiente = ctrlSucursales.buscarPorId(rutaActual[indiceActual + 1]);
+        if (siguiente == null) {
+            ultimoMensaje = "Error: sucursal siguiente no encontrada.";
+            finalizada = true;
+            return false;
+        }
+
+        // Movimiento 1: Ingreso → Preparación (con tiempo de ingreso)
+        if (!actual.getColaIngreso().estaVacia()) {
+            dormir((long) (actual.getTiempoIngreso() * 500));
+            Producto p = actual.getColaIngreso().desencolar();
+            actual.getColaTraspaso().encolar(p);
+            ultimoMensaje = "Producto " + p.getNombre() + " pasa a preparacion en " + actual.getNombre();
+            return true;
+        }
+
+        // Movimiento 2: Preparación → Salida (con tiempo de traspaso)
+        if (!actual.getColaTraspaso().estaVacia()) {
+            dormir((long) (actual.getTiempoTraspaso() * 500));
+            Producto p = actual.getColaTraspaso().desencolar();
+            actual.getColaDespacho().encolar(p);
+            ultimoMensaje = "Producto " + p.getNombre() + " pasa a cola de salida en " + actual.getNombre();
+            return true;
+        }
+
+        // Movimiento 3: Salida → Siguiente sucursal (con intervalo de despacho)
+        if (!actual.getColaDespacho().estaVacia()) {
+            dormir((long) (actual.getIntervaloDespacho() * 500));
+            Producto p = actual.getColaDespacho().desencolar();
+            siguiente.getColaIngreso().encolar(p);
+            indiceActual++;
+            ultimoMensaje = "Producto " + p.getNombre() + " enviado de " + actual.getNombre() + " a " + siguiente.getNombre();
+            return true;
+        }
+
+        ultimoMensaje = "Sin productos en colas de " + actual.getNombre();
+        return false;
+    }
+
+    /**
+     * Procesa manualmente un solo paso (para el botón paso a paso). Respeta
+     * tiempos igual que el automático.
+     */
+    public boolean procesarUnPaso(ControladorSucursales ctrl) {
+        this.ctrlSucursales = ctrl;
+        boolean resultado = procesarUnPasoInterno();
+        notificarGUI();
+        return resultado;
+    }
+
+    private void dormir(long milis) {
+        try {
+            if (milis > 0) {
+                Thread.sleep(milis);
+            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+    }
+
+    /**
+     * Detiene la simulación automática.
+     */
+    public void detener() {
+        enEjecucion = false;
+        if (hiloSimulacion != null) {
+            hiloSimulacion.interrupt();
+        }
+        ultimoMensaje = "Simulacion detenida por el usuario.";
+        notificarGUI();
+    }
+
+    /**
+     * Prepara transferencia para modo manual (sin hilo).
+     */
+    public void prepararTransferencia(Producto p, int[] ruta, ControladorSucursales ctrl) {
+        this.rutaActual = ruta;
+        this.indiceActual = 0;
+        this.productoActual = p;
+        this.finalizada = false;
+        this.enEjecucion = false; // manual
+        this.ctrlSucursales = ctrl;
+
+        ultimoMensaje = "Producto " + p.getNombre() + " listo para iniciar transferencia manual.";
+    }
 }
