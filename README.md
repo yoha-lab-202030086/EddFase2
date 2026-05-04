@@ -30,39 +30,42 @@ Optimiza operaciones de almacenamiento, búsqueda y transferencia de productos e
 ---
 
 ## 3. Estructura del Proyecto
+
+```text
 Fase2Edd/
 ├── README.md
 ├── pom.xml
 ├── src/main/java/fase2edd/
-│ ├── Fase2Edd.java
-│ ├── modelo/
-│ │ ├── Producto.java
-│ │ ├── Sucursal.java
-│ │ ├── Conexion.java
-│ │ ├── EstadoProducto.java
-│ │ └── ResultadoOperacion.java
-│ ├── estructuras/
-│ │ ├── lista/ (NodoLista, ListaEnlazada)
-│ │ ├── pila/ (NodoPila, Pila)
-│ │ ├── cola/ (NodoCola, Cola)
-│ │ ├── arbolavl/ (NodoAVL, ArbolAVL)
-│ │ ├── hash/ (NodoHash, TablaHash)
-│ │ ├── btree/ (NodoB, ArbolB)
-│ │ ├── bplustree/ (NodoBPlus, ArbolBPlus)
-│ │ └── grafo/ (NodoGrafo, Arista, Grafo)
-│ ├── inventario/ (Inventario)
-│ ├── control/ (ControladorGlobal, ControladorInventario,
-│ │ ControladorSucursales, ControladorTransferencias)
-│ ├── servicios/ (ServicioCSV, ServicioMedicion, ServicioLog)
-│ ├── simulacion/ (SimuladorDespacho)
-│ ├── vista/ (VentanaPrincipal, VisualizadorGraphviz,
-│ │ PanelSucursalesHelper, PanelRedSucursalesHelper,
-│ │ PanelTransferenciasHelper, PanelMedicionRendimiento)
-│ └── util/ (Rutas, Validaciones)
+│   ├── Fase2Edd.java
+│   ├── modelo/
+│   │   ├── Producto.java
+│   │   ├── Sucursal.java
+│   │   ├── Conexion.java
+│   │   ├── EstadoProducto.java
+│   │   └── ResultadoOperacion.java
+│   ├── estructuras/
+│   │   ├── lista/ (NodoLista, ListaEnlazada)
+│   │   ├── pila/ (NodoPila, Pila)
+│   │   ├── cola/ (NodoCola, Cola)
+│   │   ├── arbolavl/ (NodoAVL, ArbolAVL)
+│   │   ├── hash/ (NodoHash, TablaHash)
+│   │   ├── btree/ (NodoB, ArbolB)
+│   │   ├── bplustree/ (NodoBPlus, ArbolBPlus)
+│   │   └── grafo/ (NodoGrafo, Arista, Grafo)
+│   ├── inventario/ (Inventario)
+│   ├── control/ (ControladorGlobal, ControladorInventario,
+│   │   ControladorSucursales, ControladorTransferencias)
+│   ├── servicios/ (ServicioCSV, ServicioMedicion, ServicioLog)
+│   ├── simulacion/ (SimuladorDespacho)
+│   ├── vista/ (VentanaPrincipal, VisualizadorGraphviz,
+│   │   PanelSucursalesHelper, PanelRedSucursalesHelper,
+│   │   PanelTransferenciasHelper, PanelMedicionRendimiento)
+│   └── util/ (Rutas, Validaciones)
 └── archivos/
-├── sucursales.csv
-├── conexiones.csv
-└── productos.csv
+    ├── sucursales.csv
+    ├── conexiones.csv
+    └── productos.csv
+```
 ---
 ## 4. Instrucciones de Compilación y Ejecución
 
