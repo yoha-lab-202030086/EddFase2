@@ -21,17 +21,41 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     private PanelSucursalesHelper panelSucursalesHelper;
     private PanelRedSucursalesHelper panelRedHelper;
     JLabel lblRutaResultado;
+    private PanelTransferenciasHelper panelTransferenciasHelper;
 
     public VentanaPrincipal() {
         initComponents();
+        controlador = new ControladorGlobal();
         jTabbedPane3.addChangeListener(e -> {
             if (jTabbedPane3.getSelectedIndex() == 2) { // índice de Red de Sucursales
                 panelRedHelper.actualizarCombos();
                 panelRedHelper.dibujarGrafo();
             }
+            if (jTabbedPane3.getSelectedIndex() == 3) {
+                panelTransferenciasHelper.actualizarCombos();
+            }
         });
+
+        panelTransferenciasHelper = new PanelTransferenciasHelper(
+                controlador,
+                cmbSucursalOrigenTransferencia,
+                cmbSucursalDestinoTransferencia,
+                cmbProductoTransferencia,
+                rbnTransferenciaTiempo,
+                rbnTransferenciaCosto,
+                btnIniciarTransferencia,
+                btnProcesarPaso,
+                txtColaIngreso,
+                txtColaPreparacion,
+                txtColaSalida,
+                lblEstadoProducto,
+                lblETA,
+                lblUltimoEvento,
+                output
+        );
+        panelTransferenciasHelper.actualizarCombos(); // inicial
         lblRutaResultado = new JLabel();
-        controlador = new ControladorGlobal();
+        
         panelSucursalesHelper = new PanelSucursalesHelper(
                 controlador,
                 txtIdSucursal,
@@ -114,6 +138,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
 
         buttonGroup1 = new javax.swing.ButtonGroup();
         buttonGroup2 = new javax.swing.ButtonGroup();
+        buttonGroup3 = new javax.swing.ButtonGroup();
         jTabbedPane3 = new javax.swing.JTabbedPane();
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
@@ -205,6 +230,35 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         cmbDestinoRuta = new javax.swing.JComboBox<>();
         pnlGrafoDibujo = new javax.swing.JPanel();
         jPanel4 = new javax.swing.JPanel();
+        jPanel5 = new javax.swing.JPanel();
+        jLabel26 = new javax.swing.JLabel();
+        jLabel30 = new javax.swing.JLabel();
+        jLabel31 = new javax.swing.JLabel();
+        cmbSucursalDestinoTransferencia = new javax.swing.JComboBox<>();
+        cmbProductoTransferencia = new javax.swing.JComboBox<>();
+        cmbSucursalOrigenTransferencia = new javax.swing.JComboBox<>();
+        jLabel32 = new javax.swing.JLabel();
+        rbnTransferenciaTiempo = new javax.swing.JRadioButton();
+        rbnTransferenciaCosto = new javax.swing.JRadioButton();
+        btnIniciarTransferencia = new javax.swing.JButton();
+        btnProcesarPaso = new javax.swing.JButton();
+        jPanel6 = new javax.swing.JPanel();
+        jLabel33 = new javax.swing.JLabel();
+        jLabel34 = new javax.swing.JLabel();
+        jLabel35 = new javax.swing.JLabel();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        txtColaIngreso = new javax.swing.JTextArea();
+        jScrollPane4 = new javax.swing.JScrollPane();
+        txtColaPreparacion = new javax.swing.JTextArea();
+        jScrollPane5 = new javax.swing.JScrollPane();
+        txtColaSalida = new javax.swing.JTextArea();
+        jPanel7 = new javax.swing.JPanel();
+        jLabel36 = new javax.swing.JLabel();
+        jLabel37 = new javax.swing.JLabel();
+        jLabel38 = new javax.swing.JLabel();
+        lblETA = new javax.swing.JLabel();
+        lblUltimoEvento = new javax.swing.JLabel();
+        lblEstadoProducto = new javax.swing.JLabel();
         output = new javax.swing.JLabel();
         jButton1 = new javax.swing.JButton();
         jMenuBar1 = new javax.swing.JMenuBar();
@@ -930,15 +984,237 @@ public class VentanaPrincipal extends javax.swing.JFrame {
 
         jTabbedPane3.addTab("Red de Sucursales", jPanel3);
 
+        jLabel26.setFont(new java.awt.Font("Liberation Sans", 1, 18)); // NOI18N
+        jLabel26.setText("Prodcuto:");
+
+        jLabel30.setFont(new java.awt.Font("Liberation Sans", 1, 18)); // NOI18N
+        jLabel30.setText("Origen:");
+
+        jLabel31.setFont(new java.awt.Font("Liberation Sans", 1, 18)); // NOI18N
+        jLabel31.setText("Destino:");
+
+        cmbSucursalDestinoTransferencia.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+
+        cmbProductoTransferencia.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+
+        cmbSucursalOrigenTransferencia.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+
+        jLabel32.setFont(new java.awt.Font("Liberation Sans", 1, 18)); // NOI18N
+        jLabel32.setText("Criterio:");
+
+        buttonGroup3.add(rbnTransferenciaTiempo);
+        rbnTransferenciaTiempo.setFont(new java.awt.Font("Liberation Sans", 1, 16)); // NOI18N
+        rbnTransferenciaTiempo.setText("Tiempo");
+
+        buttonGroup3.add(rbnTransferenciaCosto);
+        rbnTransferenciaCosto.setFont(new java.awt.Font("Liberation Sans", 1, 16)); // NOI18N
+        rbnTransferenciaCosto.setText("Costo");
+
+        btnIniciarTransferencia.setFont(new java.awt.Font("Liberation Sans", 1, 16)); // NOI18N
+        btnIniciarTransferencia.setText("Iniciar Transferencia");
+        btnIniciarTransferencia.addActionListener(this::btnIniciarTransferenciaActionPerformed);
+
+        btnProcesarPaso.setFont(new java.awt.Font("Liberation Sans", 1, 16)); // NOI18N
+        btnProcesarPaso.setText("Procesar Siguiente Paso");
+        btnProcesarPaso.addActionListener(this::btnProcesarPasoActionPerformed);
+
+        javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
+        jPanel5.setLayout(jPanel5Layout);
+        jPanel5Layout.setHorizontalGroup(
+            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel5Layout.createSequentialGroup()
+                .addGap(79, 79, 79)
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jLabel32, javax.swing.GroupLayout.PREFERRED_SIZE, 116, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel26, javax.swing.GroupLayout.PREFERRED_SIZE, 116, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel5Layout.createSequentialGroup()
+                        .addComponent(rbnTransferenciaTiempo)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(rbnTransferenciaCosto)
+                        .addGap(189, 189, 189))
+                    .addGroup(jPanel5Layout.createSequentialGroup()
+                        .addComponent(cmbProductoTransferencia, javax.swing.GroupLayout.PREFERRED_SIZE, 194, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(72, 72, 72)
+                        .addComponent(jLabel30)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(cmbSucursalOrigenTransferencia, javax.swing.GroupLayout.PREFERRED_SIZE, 206, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 16, Short.MAX_VALUE)))
+                .addComponent(jLabel31, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(cmbSucursalDestinoTransferencia, javax.swing.GroupLayout.PREFERRED_SIZE, 197, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(47, Short.MAX_VALUE))
+            .addGroup(jPanel5Layout.createSequentialGroup()
+                .addGap(95, 95, 95)
+                .addComponent(btnIniciarTransferencia, javax.swing.GroupLayout.PREFERRED_SIZE, 199, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(btnProcesarPaso, javax.swing.GroupLayout.PREFERRED_SIZE, 239, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(414, 414, 414))
+        );
+        jPanel5Layout.setVerticalGroup(
+            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel5Layout.createSequentialGroup()
+                .addGap(19, 19, 19)
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel26)
+                    .addComponent(jLabel30)
+                    .addComponent(jLabel31)
+                    .addComponent(cmbSucursalDestinoTransferencia, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(cmbProductoTransferencia, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(cmbSucursalOrigenTransferencia, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(37, 37, 37)
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel32)
+                    .addComponent(rbnTransferenciaTiempo)
+                    .addComponent(rbnTransferenciaCosto))
+                .addGap(62, 62, 62)
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnIniciarTransferencia)
+                    .addComponent(btnProcesarPaso))
+                .addContainerGap(70, Short.MAX_VALUE))
+        );
+
+        jLabel33.setFont(new java.awt.Font("Liberation Sans", 1, 20)); // NOI18N
+        jLabel33.setText("Cola de Ingreso");
+
+        jLabel34.setFont(new java.awt.Font("Liberation Sans", 1, 20)); // NOI18N
+        jLabel34.setText("Cola preparación");
+
+        jLabel35.setFont(new java.awt.Font("Liberation Sans", 1, 20)); // NOI18N
+        jLabel35.setText("Cola salida");
+
+        txtColaIngreso.setColumns(20);
+        txtColaIngreso.setRows(5);
+        jScrollPane3.setViewportView(txtColaIngreso);
+
+        txtColaPreparacion.setColumns(20);
+        txtColaPreparacion.setRows(5);
+        jScrollPane4.setViewportView(txtColaPreparacion);
+
+        txtColaSalida.setColumns(20);
+        txtColaSalida.setRows(5);
+        jScrollPane5.setViewportView(txtColaSalida);
+
+        javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
+        jPanel6.setLayout(jPanel6Layout);
+        jPanel6Layout.setHorizontalGroup(
+            jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel6Layout.createSequentialGroup()
+                .addGap(70, 70, 70)
+                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel33)
+                    .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 72, Short.MAX_VALUE)
+                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel34, javax.swing.GroupLayout.PREFERRED_SIZE, 192, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(63, 63, 63)
+                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel35, javax.swing.GroupLayout.PREFERRED_SIZE, 153, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(48, 48, 48))
+        );
+        jPanel6Layout.setVerticalGroup(
+            jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel6Layout.createSequentialGroup()
+                .addGap(39, 39, 39)
+                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel33)
+                    .addComponent(jLabel34)
+                    .addComponent(jLabel35))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(20, Short.MAX_VALUE))
+        );
+
+        jLabel36.setFont(new java.awt.Font("Liberation Sans", 1, 20)); // NOI18N
+        jLabel36.setText("ETA:");
+
+        jLabel37.setFont(new java.awt.Font("Liberation Sans", 1, 20)); // NOI18N
+        jLabel37.setText("Estado Actual:");
+
+        jLabel38.setFont(new java.awt.Font("Liberation Sans", 1, 20)); // NOI18N
+        jLabel38.setText("Último evento:");
+
+        lblETA.setFont(new java.awt.Font("Liberation Sans", 1, 18)); // NOI18N
+        lblETA.setText("Estado Actual:");
+
+        lblUltimoEvento.setFont(new java.awt.Font("Liberation Sans", 1, 18)); // NOI18N
+        lblUltimoEvento.setText("Estado Actual:");
+
+        lblEstadoProducto.setFont(new java.awt.Font("Liberation Sans", 1, 18)); // NOI18N
+        lblEstadoProducto.setText("Estado Actual:");
+
+        javax.swing.GroupLayout jPanel7Layout = new javax.swing.GroupLayout(jPanel7);
+        jPanel7.setLayout(jPanel7Layout);
+        jPanel7Layout.setHorizontalGroup(
+            jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel7Layout.createSequentialGroup()
+                .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel7Layout.createSequentialGroup()
+                        .addGap(30, 30, 30)
+                        .addComponent(jLabel36)
+                        .addGap(35, 35, 35)
+                        .addComponent(lblETA, javax.swing.GroupLayout.PREFERRED_SIZE, 316, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jLabel38)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(lblUltimoEvento, javax.swing.GroupLayout.PREFERRED_SIZE, 458, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel7Layout.createSequentialGroup()
+                        .addGap(217, 217, 217)
+                        .addComponent(lblEstadoProducto, javax.swing.GroupLayout.PREFERRED_SIZE, 758, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(45, Short.MAX_VALUE))
+            .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel7Layout.createSequentialGroup()
+                    .addGap(29, 29, 29)
+                    .addComponent(jLabel37)
+                    .addContainerGap(918, Short.MAX_VALUE)))
+        );
+        jPanel7Layout.setVerticalGroup(
+            jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel7Layout.createSequentialGroup()
+                .addGap(40, 40, 40)
+                .addComponent(lblEstadoProducto)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 73, Short.MAX_VALUE)
+                .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel36)
+                    .addComponent(jLabel38)
+                    .addComponent(lblETA)
+                    .addComponent(lblUltimoEvento))
+                .addGap(38, 38, 38))
+            .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel7Layout.createSequentialGroup()
+                    .addGap(38, 38, 38)
+                    .addComponent(jLabel37)
+                    .addContainerGap(129, Short.MAX_VALUE)))
+        );
+
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
         jPanel4Layout.setHorizontalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 1150, Short.MAX_VALUE)
+            .addGroup(jPanel4Layout.createSequentialGroup()
+                .addGap(32, 32, 32)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 700, Short.MAX_VALUE)
+            .addGroup(jPanel4Layout.createSequentialGroup()
+                .addGap(16, 16, 16)
+                .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jPanel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         jTabbedPane3.addTab("Transferencias", jPanel4);
@@ -1361,6 +1637,14 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         panelRedHelper.agregarConexion();
     }//GEN-LAST:event_btnAgregarConexionActionPerformed
 
+    private void btnIniciarTransferenciaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnIniciarTransferenciaActionPerformed
+      panelTransferenciasHelper.iniciarTransferencia();
+    }//GEN-LAST:event_btnIniciarTransferenciaActionPerformed
+
+    private void btnProcesarPasoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnProcesarPasoActionPerformed
+        panelTransferenciasHelper.procesarSiguientePaso();
+    }//GEN-LAST:event_btnProcesarPasoActionPerformed
+
     private void agregarProductoATabla(javax.swing.table.DefaultTableModel modelo, Producto p) {
         modelo.addRow(new Object[]{
             p.getNombre(), p.getCodigoBarra(), p.getCategoria(),
@@ -1376,19 +1660,25 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     private javax.swing.JButton btnCalcularRuta;
     private javax.swing.JButton btnCrearSucursal;
     private javax.swing.JButton btnEliminarSucursal;
+    private javax.swing.JButton btnIniciarTransferencia;
     private javax.swing.JButton btnLimpiarSucursal;
     private javax.swing.JButton btnModificarSucursal;
+    private javax.swing.JButton btnProcesarPaso;
     private javax.swing.JMenuItem btree;
     private javax.swing.JMenuItem btreeplus;
     private javax.swing.JButton buscar;
     private javax.swing.JPanel busqueda;
     private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.ButtonGroup buttonGroup2;
+    private javax.swing.ButtonGroup buttonGroup3;
     private javax.swing.JCheckBox chkBidireccional;
     private javax.swing.JComboBox<String> cmbDestinoConexion;
     private javax.swing.JComboBox<String> cmbDestinoRuta;
     private javax.swing.JComboBox<String> cmbOrigenConexion;
     private javax.swing.JComboBox<String> cmbOrigenRuta;
+    private javax.swing.JComboBox<String> cmbProductoTransferencia;
+    private javax.swing.JComboBox<String> cmbSucursalDestinoTransferencia;
+    private javax.swing.JComboBox<String> cmbSucursalOrigenTransferencia;
     private javax.swing.JMenuItem csvConexiones;
     private javax.swing.JMenuItem csvProducto;
     private javax.swing.JMenuItem csvSucursal;
@@ -1425,10 +1715,20 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel23;
     private javax.swing.JLabel jLabel24;
     private javax.swing.JLabel jLabel25;
+    private javax.swing.JLabel jLabel26;
     private javax.swing.JLabel jLabel27;
     private javax.swing.JLabel jLabel28;
     private javax.swing.JLabel jLabel29;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel30;
+    private javax.swing.JLabel jLabel31;
+    private javax.swing.JLabel jLabel32;
+    private javax.swing.JLabel jLabel33;
+    private javax.swing.JLabel jLabel34;
+    private javax.swing.JLabel jLabel35;
+    private javax.swing.JLabel jLabel36;
+    private javax.swing.JLabel jLabel37;
+    private javax.swing.JLabel jLabel38;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
@@ -1443,10 +1743,19 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
+    private javax.swing.JPanel jPanel5;
+    private javax.swing.JPanel jPanel6;
+    private javax.swing.JPanel jPanel7;
     private javax.swing.JPanel jPanel9;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JScrollPane jScrollPane4;
+    private javax.swing.JScrollPane jScrollPane5;
     private javax.swing.JTabbedPane jTabbedPane3;
+    private javax.swing.JLabel lblETA;
+    private javax.swing.JLabel lblEstadoProducto;
+    private javax.swing.JLabel lblUltimoEvento;
     private javax.swing.JButton limpiar;
     private javax.swing.JLabel output;
     private javax.swing.JPanel pnlGrafoDibujo;
@@ -1454,6 +1763,8 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     private javax.swing.JPanel rangos;
     private javax.swing.JRadioButton rbnRutaCosto;
     private javax.swing.JRadioButton rbnRutaTiempo;
+    private javax.swing.JRadioButton rbnTransferenciaCosto;
+    private javax.swing.JRadioButton rbnTransferenciaTiempo;
     private javax.swing.JRadioButton rcateg;
     private javax.swing.JRadioButton rcodigo;
     private javax.swing.JRadioButton rnombre;
@@ -1461,6 +1772,9 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     private javax.swing.JLabel sucursalSeleccionado;
     private javax.swing.JTable tablaProductos;
     private javax.swing.JTable tblSucursales;
+    private javax.swing.JTextArea txtColaIngreso;
+    private javax.swing.JTextArea txtColaPreparacion;
+    private javax.swing.JTextArea txtColaSalida;
     private javax.swing.JTextField txtCostoConexion;
     private javax.swing.JTextField txtIdSucursal;
     private javax.swing.JTextField txtNombreSucursal;

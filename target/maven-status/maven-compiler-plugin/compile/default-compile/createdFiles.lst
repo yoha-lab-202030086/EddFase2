@@ -29,6 +29,7 @@ fase2edd/vista/PanelRedSucursalesHelper.class
 fase2edd/estructuras/btree/ArbolB.class
 fase2edd/util/Rutas.class
 fase2edd/estructuras/listas/NodoLista.class
+fase2edd/vista/PanelTransferenciasHelper.class
 fase2edd/model/ResultadoOperacion.class
 fase2edd/estructuras/cola/NodoCola.class
 fase2edd/estructuras/hash/NodoHash.class
