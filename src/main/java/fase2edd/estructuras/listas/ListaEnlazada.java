@@ -2,8 +2,6 @@ package fase2edd.estructuras.listas;
 
 import fase2edd.model.Producto;
 
-
-
 public class ListaEnlazada {
     private NodoLista cabeza;
     private int tamanio;
@@ -27,7 +25,6 @@ public class ListaEnlazada {
         tamanio++;
     }
 
-    
     public Producto buscarPorCodigo(String codigo) {
         NodoLista actual = cabeza;
         while (actual != null) {

@@ -1,8 +1,0 @@
-INICIO DE LOG - Errores y eventos
-===================================
-[INFO] Cargando sucursales desde: /home/tuxrex/Descargas/sucursales.csv
-[INFO] Sucursales cargadas: 20
-[INFO] Cargando conexiones desde: /home/tuxrex/Descargas/conexiones.csv
-[INFO] Conexiones cargadas: 40
-[INFO] Cargando productos desde: /home/tuxrex/Descargas/productos.csv
-[INFO] Productos cargados: 280

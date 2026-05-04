@@ -16,9 +16,7 @@ public class ControladorGlobal {
     public ControladorGlobal() {
         sucursalesCtrl = new ControladorSucursales();
         transferenciasCtrl = new ControladorTransferencias(sucursalesCtrl);
-        // El inventario por defecto se asocia a una sucursal, pero aquí usaremos
-        // un inventario "global" solo para pruebas; en realidad cada sucursal tiene el suyo.
-        // Para productos globales se puede usar el controlador de inventario de una sucursal "central".
+        // inicia y conecta sscursales y transferencias
         inventarioCtrl = null; // se asignará cuando se seleccione una sucursal
     }
 
